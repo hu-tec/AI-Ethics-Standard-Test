@@ -21,6 +21,7 @@ app.use(express.json())
 // 라우트
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/diagnosis', require('./routes/diagnosis'))
+app.use('/api/admin', require('./routes/admin'))
 
 // 헬스체크
 app.get('/api/health', (req, res) => {
@@ -28,12 +29,13 @@ app.get('/api/health', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 AI 윤리 백엔드 실행 중: http://localhost:${PORT}`)
-  console.log(`📋 API 엔드포인트:`)
-  console.log(`   POST /api/auth/register  — 회원가입`)
-  console.log(`   POST /api/auth/login     — 로그인`)
-  console.log(`   GET  /api/auth/me        — 내 정보`)
-  console.log(`   POST /api/diagnosis/save — 진단 결과 저장`)
-  console.log(`   GET  /api/diagnosis/history — 내 진단 기록`)
-  console.log(`\n⚠️  DB 연결: .env 파일에 Supabase 설정 필요\n`)
+  console.log(`\n🚀 AI 윤리 백엔드: http://localhost:${PORT}`)
+  console.log(`   POST /api/auth/register`)
+  console.log(`   POST /api/auth/login`)
+  console.log(`   GET  /api/auth/me`)
+  console.log(`   POST /api/diagnosis/save`)
+  console.log(`   GET  /api/diagnosis/history`)
+  console.log(`   GET  /api/admin/stats  (admin only)`)
+  console.log(`   GET  /api/admin/users  (admin only)`)
+  console.log(`   GET  /api/admin/diagnosis (admin only)\n`)
 })

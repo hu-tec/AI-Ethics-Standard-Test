@@ -28,4 +28,11 @@ export const api = {
   // Diagnosis
   saveDiagnosis: (body) => request('/diagnosis/save', { method: 'POST', body: JSON.stringify(body) }),
   getHistory: () => request('/diagnosis/history'),
+
+  // Admin
+  adminStats: () => request('/admin/stats'),
+  adminUsers: () => request('/admin/users'),
+  adminDeleteUser: (id) => request(`/admin/users/${id}`, { method: 'DELETE' }),
+  adminChangeRole: (id, role) => request(`/admin/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) }),
+  adminDiagnosis: () => request('/admin/diagnosis'),
 }

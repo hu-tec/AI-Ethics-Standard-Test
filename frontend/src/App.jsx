@@ -19,6 +19,8 @@ import PaidDiagnosis2 from './pages/PaidDiagnosis2'
 import PaidDiagnosis3 from './pages/PaidDiagnosis3'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Admin from './pages/Admin'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
   return (
@@ -33,16 +35,17 @@ export default function App() {
             <Route path="/fields" element={<Fields />} />
             <Route path="/process" element={<Process />} />
             <Route path="/status" element={<Status />} />
-            <Route path="/diagnosis" element={<Diagnosis />} />
+            <Route path="/diagnosis" element={<ProtectedRoute><Diagnosis /></ProtectedRoute>} />
             <Route path="/education" element={<Education />} />
             <Route path="/certificate" element={<Certificate />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/expert" element={<ExpertRecruit />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/paid-diagnosis" element={<PaidDiagnosisHub />} />
-            <Route path="/paid-diagnosis/1" element={<PaidDiagnosis1 />} />
-            <Route path="/paid-diagnosis/2" element={<PaidDiagnosis2 />} />
-            <Route path="/paid-diagnosis/3" element={<PaidDiagnosis3 />} />
+            <Route path="/paid-diagnosis" element={<ProtectedRoute><PaidDiagnosisHub /></ProtectedRoute>} />
+            <Route path="/paid-diagnosis/1" element={<ProtectedRoute><PaidDiagnosis1 /></ProtectedRoute>} />
+            <Route path="/paid-diagnosis/2" element={<ProtectedRoute><PaidDiagnosis2 /></ProtectedRoute>} />
+            <Route path="/paid-diagnosis/3" element={<ProtectedRoute><PaidDiagnosis3 /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>
