@@ -29,10 +29,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - name: Build
-        env:
-          # 저장소 Settings → Secrets and variables → Actions → Variables 에 등록
-          # 예: https://your-backend.onrender.com/api
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+        # API 주소는 frontend/.env.production 에 고정 (Render 백엔드)
         run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
