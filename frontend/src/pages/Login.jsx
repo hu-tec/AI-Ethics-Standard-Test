@@ -27,6 +27,23 @@ export default function Login() {
     }
   }
 
+  // 관리자 바로 입장: 관리자 계정 자동 입력 후 로그인 → 관리자 페이지
+  const ADMIN_EMAIL = 'admin@naver.com'
+  const ADMIN_PASSWORD = 'admin1234'
+  const quickAdmin = async () => {
+    setForm({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
+    setError('')
+    setLoading(true)
+    try {
+      await login(ADMIN_EMAIL, ADMIN_PASSWORD)
+      navigate('/admin', { replace: true })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-[calc(100vh-130px)] flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
@@ -67,6 +84,19 @@ export default function Login() {
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
+
+          {/* 관리자 바로 입장 */}
+          <div className="border-t border-dashed border-gray-200 pt-3">
+            <button
+              type="button" onClick={quickAdmin} disabled={loading}
+              className="w-full bg-gray-900 hover:bg-black text-white font-bold py-2.5 rounded-lg text-sm transition-all disabled:opacity-50"
+            >
+              🔑 관리자로 바로 입장
+            </button>
+            <p className="mt-2 text-center text-[11px] text-gray-400">
+              admin@naver.com / admin1234 자동 입력 후 관리자 페이지로 이동
+            </p>
+          </div>
         </form>
 
         <p className="text-center text-xs text-gray-500 mt-4">
