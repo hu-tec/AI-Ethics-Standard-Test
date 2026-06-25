@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휴텍씨 — DB 관리 페이지 목업</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  * { font-family: 'Noto Sans KR', sans-serif; }
+  .tbl-active { background: #16a34a !important; color: white !important; }
+  .tbl-active .badge-built { background: rgba(255,255,255,.25) !important; color:#fff !important;}
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .cell-edit:focus { outline: 2px solid #16a34a; background:#f0fdf4; border-radius:4px; }
+  .row-new { animation: flash 1s ease; }
+  @keyframes flash { from { background:#dcfce7; } to { background:transparent; } }
+</style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div class="flex h-screen overflow-hidden">
+
+  <!-- ════════ 사이드바: 테이블 목록 ════════ -->
+  <aside class="w-60 bg-gray-900 text-gray-200 flex flex-col flex-shrink-0">
+    <div class="px-5 py-4 border-b border-gray-700 flex items-center gap-2">
+      <div class="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white font-black text-xs">DB</div>
+      <div>
+        <div class="text-xs font-black text-white leading-tight">휴텍씨 DB 관리</div>
+        <div class="text-[9px] text-gray-400">PostgreSQL · Supabase</div>
+      </div>
+    </div>
+
+    <!-- 테이블 검색 -->
+    <div class="px-3 py-2.5 border-b border-gray-700">
+      <input id="tblSearch" oninput="renderTableList()" placeholder="🔎 테이블 검색…"
+             class="w-full bg-gray-800 text-gray-100 placeholder-gray-500 text-[11px] rounded-lg px-3 py-1.5 border border-gray-700 focus:border-green-500 outline-none">
+      <div class="flex items-center justify-between mt-2 text-[9px] text-gray-500">
+        <span id="tblCount">37개 테이블</span>
+        <span><span class="text-green-400">●</span> 구축 <span id="builtCount">3</span> / 설계 <span id="designedCount">34</span></span>
+      </div>
+    </div>
+
+    <nav id="tableList" class="flex-1 py-1 overflow-y-auto text-xs"></nav>
+
+    <div class="px-4 py-3 border-t border-gray-700 flex items-center justify-between">
+      <span class="text-[9px] text-gray-500">schema.sql 동기화: <span class="text-green-400">06-25</span></span>
+      <button class="text-[10px] text-gray-400 hover:text-white">⬅ 관리자</button>
+    </div>
+  </aside>
+
+  <!-- ════════ 메인 ════════ -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- 헤더 -->
+    <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <h1 class="text-sm font-black text-gray-900"><span id="curTblKor">회원</span></h1>
+        <code id="curTblName" class="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">users</code>
+        <span id="curTblStatus" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">구축됨</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchView('data')" id="view-data" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-green-600 text-white">📋 데이터</button>
+        <button onclick="switchView('schema')" id="view-schema" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">🧱 스키마</button>
+        <button onclick="switchView('sql')" id="view-sql" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">⌨ SQL</button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-auto p-5">
+
+      <!-- ── 테이블 메타 바 ── -->
+      <div class="flex items-center gap-3 mb-3 flex-wrap">
+        <div class="bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex items-center gap-4">
+          <div><div class="text-[9px] text-gray-400">컬럼</div><div class="text-sm font-black text-gray-900"><span id="metaCols">9</span></div></div>
+          <div class="w-px h-7 bg-gray-100"></div>
+          <div><div class="text-[9px] text-gray-400">행(rows)</div><div class="text-sm font-black text-gray-900"><span id="metaRows">12,847</span></div></div>
+          <div class="w-px h-7 bg-gray-100"></div>
+          <div><div class="text-[9px] text-gray-400">FK 관계</div><div class="text-sm font-black text-gray-900"><span id="metaFk">1</span></div></div>
+        </div>
+        <div id="metaGroup" class="text-[10px] text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">📂 회원/인증</div>
+        <div id="metaDesc" class="text-[10px] text-gray-400 flex-1">통합 회원 (일반/전문가/관리자) — role 컬럼으로 구분</div>
+      </div>
+
+      <!-- ══════ 데이터 뷰 ══════ -->
+      <section id="section-data">
+        <!-- 툴바 -->
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <input id="rowSearch" oninput="renderGrid()" placeholder="🔎 행 검색 (이름/이메일/번호…)"
+                 class="text-[11px] border border-gray-200 rounded-lg px-3 py-1.5 w-64 focus:border-green-400 outline-none">
+          <button onclick="addRow()" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700">＋ 행 추가</button>
+          <button onclick="alert('CSV 내보내기 (목업)')" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">⬇ CSV</button>
+          <span class="text-[10px] text-gray-400 ml-1">셀을 클릭하면 인라인 편집 (목업)</span>
+          <span id="dirtyBadge" class="hidden text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">● 저장 안 된 변경 <button onclick="saveAll()" class="underline ml-1">저장</button></span>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left whitespace-nowrap">
+              <thead id="gridHead" class="bg-gray-50 text-[10px] font-black text-gray-500 uppercase"></thead>
+              <tbody id="gridBody" class="text-[11px] text-gray-700 divide-y divide-gray-100"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="emptyData" class="hidden text-center text-gray-400 text-xs py-12 bg-white border border-gray-200 rounded-xl mt-2">
+          이 테이블은 <b>설계만 완료</b>된 상태입니다. 샘플 데이터 없음 — <button onclick="switchView('sql')" class="text-green-600 underline">CREATE TABLE SQL 보기</button>
+        </div>
+      </section>
+
+      <!-- ══════ 스키마 뷰 ══════ -->
+      <section id="section-schema" class="hidden">
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left">
+            <thead class="bg-gray-50 text-[10px] font-black text-gray-500 uppercase">
+              <tr>
+                <th class="px-4 py-2.5">컬럼</th><th class="px-4 py-2.5">타입</th>
+                <th class="px-4 py-2.5">제약</th><th class="px-4 py-2.5">설명</th>
+              </tr>
+            </thead>
+            <tbody id="schemaBody" class="text-[11px] text-gray-700 divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+        <div id="fkBox" class="mt-3"></div>
+      </section>
+
+      <!-- ══════ SQL 뷰 ══════ -->
+      <section id="section-sql" class="hidden">
+        <div class="bg-gray-900 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <span class="text-[10px] text-gray-400">CREATE TABLE — Supabase SQL Editor에 붙여넣기</span>
+            <button onclick="copySql()" class="text-[10px] text-green-400 hover:text-green-300">⧉ 복사</button>
+          </div>
+          <pre id="sqlBox" class="text-[11px] leading-relaxed text-gray-100 p-4 overflow-x-auto"></pre>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   휴텍씨 DB 스키마 — DB_DESIGN.md 기반 (목업 데이터)
+   status: 'built' = schema.sql 에 실제 존재 / 'designed' = 설계만 완료
+   ============================================================ */
+const c = (name, type, key, desc) => ({ name, type, key, desc });
+
+const SCHEMA = {
+  // ── 회원/인증 ──
+  users: { kor:'회원', group:'회원/인증', status:'built', desc:'통합 회원 (일반/전문가/관리자) — role 컬럼으로 구분', cols:[
+    c('id','UUID','PK',''), c('user_no','VARCHAR(20)','UNIQUE','자동생성 번호'),
+    c('site_id','INT','FK→sites','주 사이트'), c('role','VARCHAR(20)','','user/expert/admin'),
+    c('name','VARCHAR(100)','NOT NULL',''), c('email','VARCHAR(255)','UNIQUE',''),
+    c('phone','VARCHAR(20)','UNIQUE','email/phone 중 하나 필수'), c('subscription_status','VARCHAR(20)','','premium/standard/basic/none'),
+    c('funnel_stage','VARCHAR(30)','','registered→verified→first_exam→paid'), c('current_points','INT','','포인트 잔액 캐시'),
+    c('marketing_agree','BOOLEAN','','마케팅 수신 동의'), c('created_at','TIMESTAMPTZ','','') ],
+    rows:[
+      {id:'u_8a1f', user_no:'EX2406001', name:'김도현', email:'dohyun@kakao.com', phone:'010-2841-7732', role:'user', subscription_status:'standard', funnel_stage:'paid_user', current_points:'12,500', marketing_agree:'true'},
+      {id:'u_3b7c', user_no:'EX2406002', name:'이서연', email:'seoyeon.lee@gmail.com', phone:'010-9921-3344', role:'user', subscription_status:'none', funnel_stage:'first_exam', current_points:'3,000', marketing_agree:'false'},
+      {id:'u_9d2e', user_no:'EX2406003', name:'박관리', email:'admin@hutechc.com', phone:'010-1000-0001', role:'admin', subscription_status:'none', funnel_stage:'paid_user', current_points:'0', marketing_agree:'false'},
+      {id:'u_5f4a', user_no:'EX2406004', name:'최민준', email:'minjun.c@naver.com', phone:'010-5512-8890', role:'user', subscription_status:'premium', funnel_stage:'paid_user', current_points:'48,200', marketing_agree:'true'},
+    ]},
+  user_social_accounts:{ kor:'소셜 로그인', group:'회원/인증', status:'designed', desc:'카카오/네이버/구글 연동', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users CASCADE',''), c('provider','VARCHAR(20)','','kakao/naver/google'),
+    c('provider_uid','VARCHAR(255)','','소셜 고유 ID'), c('created_at','TIMESTAMPTZ','','') ], rows:[]},
+  admins:{ kor:'관리자', group:'회원/인증', status:'designed', desc:'관리자 권한 별도 관리', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users UNIQUE',''), c('admin_role','VARCHAR(30)','','master/super/payment/exam') ], rows:[]},
+  admin_permissions:{ kor:'관리자 권한', group:'회원/인증', status:'designed', desc:'메뉴별 권한 행', cols:[
+    c('id','SERIAL','PK',''), c('admin_id','INT','FK→admins CASCADE',''), c('menu_code','VARCHAR(100)','',''),
+    c('can_read','BOOLEAN','',''), c('can_write','BOOLEAN','',''), c('can_delete','BOOLEAN','','') ], rows:[]},
+
+  // ── 시험/문제 ──
+  exam_types:{ kor:'시험 종류', group:'시험/문제', status:'designed', desc:'AI 윤리/번역/프롬프트 마스터', cols:[
+    c('id','SERIAL','PK',''), c('code','VARCHAR(30)','UNIQUE','translate/prompt/ethics'), c('name','VARCHAR(100)','',''),
+    c('is_active','BOOLEAN','','') ], rows:[]},
+  exams:{ kor:'시험 회차', group:'시험/문제', status:'designed', desc:'시험 회차별 정보', cols:[
+    c('id','SERIAL','PK',''), c('exam_no','VARCHAR(20)','UNIQUE',''), c('exam_type','VARCHAR(30)','','translate/prompt/ethics'),
+    c('exam_name','VARCHAR(200)','NOT NULL',''), c('grade','VARCHAR(30)','','pro1/edu1~8'),
+    c('exam_date','DATE','',''), c('pass_score','INT','',''), c('registrant_count','INT','','자동 집계') ], rows:[]},
+  exam_formats:{ kor:'시험 양식', group:'시험/문제', status:'designed', desc:'번역/단답형/설문 양식', cols:[
+    c('id','SERIAL','PK',''), c('exam_id','INT','FK→exams CASCADE',''), c('format_type','VARCHAR(20)','','translate/short_answer'),
+    c('total_questions','INT','',''), c('pass_score','INT','','') ], rows:[]},
+  questions:{ kor:'문항', group:'시험/문제', status:'designed', desc:'문항 정의', cols:[
+    c('id','SERIAL','PK',''), c('format_id','INT','FK→exam_formats CASCADE',''), c('question_no','SMALLINT','NOT NULL',''),
+    c('question_text','TEXT','NOT NULL',''), c('answer1','TEXT','','정답'), c('score','INT','','배점') ], rows:[]},
+  answer_submissions:{ kor:'답안 제출', group:'시험/문제', status:'designed', desc:'응시자 답안 (문항당 1행)', cols:[
+    c('id','SERIAL','PK',''), c('registration_id','INT','FK→exam_registrations',''), c('question_id','INT','FK→questions',''),
+    c('answer_text','TEXT','',''), c('submitted_at','TIMESTAMPTZ','','') ], rows:[]},
+  wrong_answer_stats:{ kor:'오답 통계', group:'시험/문제', status:'designed', desc:'오답률 집계 (교재 제작 근거)', cols:[
+    c('id','SERIAL','PK',''), c('question_id','INT','FK→questions UNIQUE',''), c('wrong_rate','NUMERIC(5,2)','','오답률 %') ], rows:[]},
+
+  // ── 접수/결과 ──
+  exam_applications:{ kor:'시험 접수(신규)', group:'접수/결과', status:'built', desc:'접수 화면에서 제출된 전체 신청 정보 — 실제 구축 완료', cols:[
+    c('id','UUID','PK',''), c('application_no','TEXT','UNIQUE','EX240625-XXXXX'),
+    c('user_id','UUID','FK→users','비로그인 NULL'), c('applicant_name','TEXT','NOT NULL',''),
+    c('applicant_phone','TEXT','NOT NULL',''), c('applicant_email','TEXT','NOT NULL',''),
+    c('exam_type','TEXT','NOT NULL','ethics/translate'), c('exam_name','TEXT','NOT NULL',''),
+    c('grade_name','TEXT','','기초/전문'), c('total_amount','INTEGER','','최종 결제액'),
+    c('payment_status','TEXT','','pending/paid/refunded'), c('application_status','TEXT','','submitted/confirmed'),
+    c('created_at','TIMESTAMPTZ','','') ],
+    rows:[
+      {id:'a_77x', application_no:'EX240625-A8KQ2', user_id:'u_8a1f', applicant_name:'김도현', applicant_phone:'010-2841-7732', applicant_email:'dohyun@kakao.com', exam_type:'ethics', exam_name:'AI 윤리 시험', grade_name:'전문', total_amount:'63,000', payment_status:'paid', application_status:'confirmed'},
+      {id:'a_31y', application_no:'EX240625-M2P9L', user_id:'(비로그인)', applicant_name:'정유진', applicant_phone:'010-3321-7788', applicant_email:'yujin99@gmail.com', exam_type:'translate', exam_name:'AI 번역 시험', grade_name:'기초', total_amount:'35,000', payment_status:'pending', application_status:'submitted'},
+      {id:'a_55z', application_no:'EX240624-XQ7T4', user_id:'u_5f4a', applicant_name:'최민준', applicant_phone:'010-5512-8890', applicant_email:'minjun.c@naver.com', exam_type:'ethics', exam_name:'AI 윤리 시험', grade_name:'전문', total_amount:'60,000', payment_status:'paid', application_status:'confirmed'},
+    ]},
+  exam_registrations:{ kor:'접수/응시', group:'접수/결과', status:'designed', desc:'접수 메인 (정규 스키마, 추후 통합)', cols:[
+    c('id','SERIAL','PK',''), c('reg_no','VARCHAR(20)','UNIQUE',''), c('user_id','UUID','FK→users',''),
+    c('exam_id','INT','FK→exams',''), c('reg_status','VARCHAR(20)','','pending/complete/cancelled'),
+    c('result','VARCHAR(20)','','pass/fail/na'), c('score','NUMERIC(6,2)','','') ], rows:[]},
+  certificates:{ kor:'자격증', group:'접수/결과', status:'designed', desc:'자격증 발급 이력', cols:[
+    c('id','SERIAL','PK',''), c('registration_id','INT','FK UNIQUE',''), c('payment_id','INT','FK→payments',''),
+    c('cert_type','VARCHAR(30)','','certificate/card'), c('print_status','VARCHAR(20)','','') ], rows:[]},
+  ai_reports:{ kor:'AI 분석 리포트', group:'접수/결과', status:'designed', desc:'영역별 점수 JSONB — 무료→유료 업셀', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('registration_id','INT','FK',''),
+    c('grade','VARCHAR(20)','','basic_free/premium'), c('is_paid','BOOLEAN','',''), c('analysis','JSONB','','영역별 점수') ], rows:[]},
+  learning_history:{ kor:'학습 이력', group:'접수/결과', status:'designed', desc:'영역별 누적 이력 (성장 그래프)', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('exam_type_id','INT','FK→exam_types',''),
+    c('avg_score','NUMERIC(5,2)','',''), c('score_trend','JSONB','','시험별 추이') ], rows:[]},
+
+  // ── 진단 (AI윤리 전용) ──
+  diagnosis_results:{ kor:'진단 결과', group:'AI윤리 전용', status:'built', desc:'무료/유료 진단 결과 — 실제 구축 완료', cols:[
+    c('id','UUID','PK',''), c('user_id','UUID','FK→users','비로그인 NULL'),
+    c('diagnosis_type','VARCHAR(20)','','free/paid1/paid2/paid3'), c('score','INT','','맞은 문항 수'),
+    c('total','INT','','전체 문항'), c('percentage','NUMERIC(5,2)','',''), c('grade','VARCHAR(10)','','S/A/B/C'),
+    c('axis_scores','JSONB','','영역별 점수'), c('created_at','TIMESTAMPTZ','','') ],
+    rows:[
+      {id:'d_a1', user_id:'u_8a1f', diagnosis_type:'free', score:'14', total:'20', percentage:'70.0', grade:'B', axis_scores:'{"투명성":80,"공정성":65...}', created_at:'2026-06-24 14:22'},
+      {id:'d_b2', user_id:'(비로그인)', diagnosis_type:'free', score:'17', total:'20', percentage:'85.0', grade:'A', axis_scores:'{"투명성":90,"공정성":82...}', created_at:'2026-06-24 16:08'},
+      {id:'d_c3', user_id:'u_5f4a', diagnosis_type:'paid1', score:'28', total:'30', percentage:'93.3', grade:'S', axis_scores:'{"투명성":95,"공정성":91...}', created_at:'2026-06-25 09:40'},
+    ]},
+
+  // ── 결제/포인트 ──
+  payments:{ kor:'결제', group:'결제/포인트', status:'designed', desc:'결제 내역', cols:[
+    c('id','SERIAL','PK',''), c('payment_no','VARCHAR(20)','UNIQUE',''), c('user_id','UUID','FK→users',''),
+    c('payment_type','VARCHAR(30)','','exam_reg/subscription'), c('origin_amount','INT','NOT NULL',''),
+    c('final_amount','INT','NOT NULL',''), c('method','VARCHAR(30)','','card/kakao_pay'), c('status','VARCHAR(20)','','') ], rows:[]},
+  refunds:{ kor:'환불', group:'결제/포인트', status:'designed', desc:'환불 내역 (payments 1:1)', cols:[
+    c('id','SERIAL','PK',''), c('payment_id','INT','FK UNIQUE',''), c('amount','INT','NOT NULL',''),
+    c('reason','TEXT','',''), c('status','VARCHAR(20)','','') ], rows:[]},
+  subscription_plans:{ kor:'구독 플랜', group:'결제/포인트', status:'designed', desc:'BASIC/STANDARD/PREMIUM 정의', cols:[
+    c('id','SERIAL','PK',''), c('code','VARCHAR(20)','UNIQUE',''), c('monthly_price','INT','',''), c('benefits','JSONB','','') ], rows:[]},
+  user_subscriptions:{ kor:'회원 구독', group:'결제/포인트', status:'designed', desc:'회원 구독 이력', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('plan_id','INT','FK→subscription_plans',''),
+    c('started_at','DATE','NOT NULL',''), c('auto_renewal','BOOLEAN','','') ], rows:[]},
+  user_points:{ kor:'포인트 이력', group:'결제/포인트', status:'designed', desc:'적립/차감 이력', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('change_type','VARCHAR(20)','','charge/use/expire'),
+    c('amount','INT','NOT NULL','+적립/-차감'), c('balance_after','INT','NOT NULL','') ], rows:[]},
+
+  // ── 마케팅 ──
+  coupons:{ kor:'쿠폰', group:'마케팅', status:'designed', desc:'쿠폰 정의 (할인율/유효기간)', cols:[
+    c('id','SERIAL','PK',''), c('code','VARCHAR(50)','UNIQUE',''), c('discount_type','VARCHAR(20)','','percent/fixed'),
+    c('discount_value','INT','',''), c('valid_until','TIMESTAMPTZ','',''), c('used_count','INT','','') ], rows:[]},
+  user_coupons:{ kor:'회원 쿠폰', group:'마케팅', status:'designed', desc:'회원별 쿠폰 사용 이력', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('coupon_id','INT','FK→coupons',''), c('is_used','BOOLEAN','','') ], rows:[]},
+  utm_tracking:{ kor:'UTM 추적', group:'마케팅', status:'designed', desc:'광고 채널별 유입 추적', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users',''), c('utm_source','VARCHAR(100)','','kakao/naver'),
+    c('converted','BOOLEAN','','전환 여부') ], rows:[]},
+  referrals:{ kor:'추천인', group:'마케팅', status:'designed', desc:'추천인 이력', cols:[
+    c('id','SERIAL','PK',''), c('referrer_id','UUID','FK→users',''), c('referred_id','UUID','FK→users','') ], rows:[]},
+
+  // ── 운영/콘텐츠 ──
+  notices:{ kor:'공지사항', group:'운영/콘텐츠', status:'designed', desc:'공지사항', cols:[
+    c('id','SERIAL','PK',''), c('title','VARCHAR(300)','NOT NULL',''), c('content','TEXT','',''),
+    c('author_id','UUID','FK→users SET NULL',''), c('is_pinned','BOOLEAN','','') ], rows:[]},
+  blogs:{ kor:'블로그', group:'운영/콘텐츠', status:'designed', desc:'SEO 콘텐츠', cols:[
+    c('id','SERIAL','PK',''), c('title','VARCHAR(300)','NOT NULL',''), c('tags','JSONB','',''), c('view_count','INT','','') ], rows:[]},
+  faqs:{ kor:'FAQ', group:'운영/콘텐츠', status:'designed', desc:'FAQ (챗봇 연동)', cols:[
+    c('id','SERIAL','PK',''), c('question','TEXT','NOT NULL',''), c('answer','TEXT','',''), c('sort_order','INT','','') ], rows:[]},
+  banners:{ kor:'배너', group:'운영/콘텐츠', status:'designed', desc:'메인 배너', cols:[
+    c('id','SERIAL','PK',''), c('image_url','TEXT','',''), c('link_url','TEXT','',''), c('is_visible','BOOLEAN','','') ], rows:[]},
+  popups:{ kor:'팝업', group:'운영/콘텐츠', status:'designed', desc:'팝업', cols:[
+    c('id','SERIAL','PK',''), c('image_url','TEXT','',''), c('valid_until','DATE','',''), c('is_visible','BOOLEAN','','') ], rows:[]},
+  terms:{ kor:'이용약관', group:'운영/콘텐츠', status:'designed', desc:'이용약관', cols:[
+    c('id','SERIAL','PK',''), c('title','VARCHAR(200)','',''), c('version','VARCHAR(20)','',''), c('is_required','BOOLEAN','','') ], rows:[]},
+
+  // ── 전문가 ──
+  experts:{ kor:'전문가', group:'전문가', status:'designed', desc:'전문가 프로필 (users 1:1)', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users UNIQUE',''), c('approval_status','VARCHAR(20)','','pending/approved'),
+    c('level','CHAR(1)','','A~E'), c('rating','NUMERIC(3,2)','','0~5.00') ], rows:[]},
+  expert_educations:{ kor:'전문가 학력', group:'전문가', status:'designed', desc:'학력', cols:[
+    c('id','SERIAL','PK',''), c('expert_id','INT','FK→experts CASCADE',''), c('school_name','VARCHAR(200)','','') ], rows:[]},
+  expert_careers:{ kor:'전문가 경력', group:'전문가', status:'designed', desc:'경력', cols:[
+    c('id','SERIAL','PK',''), c('expert_id','INT','FK→experts CASCADE',''), c('company_name','VARCHAR(200)','','') ], rows:[]},
+  expert_publications:{ kor:'전문가 저서', group:'전문가', status:'designed', desc:'저서', cols:[
+    c('id','SERIAL','PK',''), c('expert_id','INT','FK→experts CASCADE',''), c('title','VARCHAR(300)','','') ], rows:[]},
+  expert_certifications:{ kor:'전문가 자격증', group:'전문가', status:'designed', desc:'자격증', cols:[
+    c('id','SERIAL','PK',''), c('expert_id','INT','FK→experts CASCADE',''), c('cert_name','VARCHAR(200)','','') ], rows:[]},
+
+  // ── B2B ──
+  b2b_companies:{ kor:'B2B 기업', group:'B2B', status:'designed', desc:'기업/기관 정보', cols:[
+    c('id','SERIAL','PK',''), c('company_no','VARCHAR(20)','UNIQUE',''), c('company_name','VARCHAR(200)','NOT NULL',''),
+    c('manager_name','VARCHAR(100)','',''), c('approval_status','VARCHAR(20)','','') ], rows:[]},
+  group_registrations:{ kor:'단체 접수', group:'B2B', status:'designed', desc:'단체 접수 헤더', cols:[
+    c('id','SERIAL','PK',''), c('company_id','INT','FK→b2b_companies',''), c('exam_id','INT','FK→exams',''), c('total_price','INT','','') ], rows:[]},
+  group_members:{ kor:'단체 구성원', group:'B2B', status:'designed', desc:'단체 접수 구성원', cols:[
+    c('id','SERIAL','PK',''), c('group_reg_id','INT','FK CASCADE',''), c('user_id','UUID','FK→users','미가입 NULL'),
+    c('exam_registration_id','INT','FK','개별 접수 연결') ], rows:[]},
+
+  // ── 분류/통계 ──
+  sites:{ kor:'사이트 구분', group:'분류/통계', status:'designed', desc:'사이트 구분 (5종)', cols:[
+    c('id','SERIAL','PK',''), c('code','VARCHAR(30)','UNIQUE','exam/metatrans',''), c('name','VARCHAR(50)','',''), c('is_active','BOOLEAN','','') ], rows:[]},
+  categories:{ kor:'카테고리', group:'분류/통계', status:'designed', desc:'대/중/소 (셀프참조)', cols:[
+    c('id','SERIAL','PK',''), c('parent_id','INT','FK→categories','NULL=대분류'), c('depth','SMALLINT','','1/2/3'),
+    c('name','VARCHAR(100)','',''), c('site_id','INT','FK→sites','') ], rows:[]},
+  daily_statistics:{ kor:'일별 통계', group:'분류/통계', status:'designed', desc:'일별 집계 통계', cols:[
+    c('id','SERIAL','PK',''), c('stat_date','DATE','NOT NULL',''), c('exam_type','VARCHAR(30)','',"DEFAULT 'all'"),
+    c('registrant_count','INT','',''), c('revenue','BIGINT','','매출 합계') ], rows:[]},
+  chatbot_logs:{ kor:'챗봇 로그', group:'분류/통계', status:'designed', desc:'챗봇 대화 로그', cols:[
+    c('id','SERIAL','PK',''), c('user_id','UUID','FK→users','비로그인 NULL'), c('messages','JSONB','NOT NULL',''),
+    c('is_unanswered','BOOLEAN','','미답변') ], rows:[]},
+};
+
+const GROUP_ORDER = ['회원/인증','시험/문제','접수/결과','AI윤리 전용','결제/포인트','마케팅','운영/콘텐츠','전문가','B2B','분류/통계'];
+const GROUP_ICON = {'회원/인증':'👤','시험/문제':'📝','접수/결과':'🎯','AI윤리 전용':'🔬','결제/포인트':'💳','마케팅':'📈','운영/콘텐츠':'📢','전문가':'🎓','B2B':'🏢','분류/통계':'🗂'};
+
+let currentTable = 'users';
+let currentView = 'data';
+let dirty = false;
+
+/* ── 사이드바 테이블 목록 ── */
+function renderTableList(){
+  const kw = (document.getElementById('tblSearch').value||'').trim().toLowerCase();
+  const list = document.getElementById('tableList');
+  let html = '';
+  let builtN = 0, designedN = 0, shown = 0;
+  for (const g of GROUP_ORDER){
+    const entries = Object.entries(SCHEMA).filter(([name,t]) => t.group===g &&
+      (!kw || name.includes(kw) || t.kor.toLowerCase().includes(kw)));
+    if (entries.length===0) continue;
+    html += `<div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">${GROUP_ICON[g]} ${g}</div>`;
+    for (const [name,t] of entries){
+      shown++;
+      const active = name===currentTable ? 'tbl-active' : 'hover:bg-gray-700';
+      const badge = t.status==='built'
+        ? `<span class="badge-built text-[8px] font-bold px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">구축</span>`
+        : `<span class="text-[8px] px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">설계</span>`;
+      html += `<a onclick="selectTable('${name}')" class="flex items-center justify-between gap-1.5 px-4 py-1.5 cursor-pointer ${active}">
+        <span class="truncate"><span class="opacity-60 text-[10px]">${t.kor}</span> <code class="text-[10px] opacity-90">${name}</code></span>${badge}</a>`;
+    }
+  }
+  for (const t of Object.values(SCHEMA)){ t.status==='built'?builtN++:designedN++; }
+  list.innerHTML = html || `<div class="px-4 py-6 text-center text-gray-500 text-[11px]">검색 결과 없음</div>`;
+  document.getElementById('tblCount').textContent = `${Object.keys(SCHEMA).length}개 테이블`;
+  document.getElementById('builtCount').textContent = builtN;
+  document.getElementById('designedCount').textContent = designedN;
+}
+
+function selectTable(name){ currentTable = name; dirty=false; updateDirty(); renderTableList(); renderAll(); }
+
+function switchView(v){
+  currentView = v;
+  ['data','schema','sql'].forEach(x=>{
+    document.getElementById('section-'+x).classList.toggle('hidden', x!==v);
+    const btn = document.getElementById('view-'+x);
+    btn.className = `text-[11px] font-bold px-3 py-1.5 rounded-lg ${x===v?'bg-green-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+  });
+  renderAll();
+}
+
+function renderAll(){
+  const t = SCHEMA[currentTable];
+  document.getElementById('curTblKor').textContent = t.kor;
+  document.getElementById('curTblName').textContent = currentTable;
+  const st = document.getElementById('curTblStatus');
+  st.textContent = t.status==='built' ? '구축됨' : '설계만 완료';
+  st.className = t.status==='built'
+    ? 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200'
+    : 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200';
+  const fkN = t.cols.filter(col=>String(col.key).includes('FK')).length;
+  document.getElementById('metaCols').textContent = t.cols.length;
+  document.getElementById('metaRows').textContent = t.status==='built'
+    ? (currentTable==='users'?'12,847':currentTable==='exam_applications'?'1,243':'247')
+    : '0';
+  document.getElementById('metaFk').textContent = fkN;
+  document.getElementById('metaGroup').textContent = `📂 ${t.group}`;
+  document.getElementById('metaDesc').textContent = t.desc;
+  if (currentView==='data') renderGrid();
+  if (currentView==='schema') renderSchema();
+  if (currentView==='sql') renderSql();
+}
+
+/* ── 데이터 그리드 ── */
+function renderGrid(){
+  const t = SCHEMA[currentTable];
+  const head = document.getElementById('gridHead');
+  const body = document.getElementById('gridBody');
+  const empty = document.getElementById('emptyData');
+  if (!t.rows || t.rows.length===0){
+    head.innerHTML=''; body.innerHTML='';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  const keys = Object.keys(t.rows[0]);
+  head.innerHTML = '<tr>'+keys.map(k=>`<th class="px-3 py-2.5">${k}</th>`).join('')+'<th class="px-3 py-2.5"></th></tr>';
+  const kw = (document.getElementById('rowSearch').value||'').trim().toLowerCase();
+  const rows = kw ? t.rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(kw))) : t.rows;
+  body.innerHTML = rows.map((r,i)=>'<tr class="hover:bg-gray-50">'+keys.map(k=>{
+    const isPk = k==='id';
+    return `<td class="px-3 py-2 ${isPk?'text-gray-400 font-mono':''}">
+      <span class="cell-edit ${isPk?'':'cursor-text'}" ${isPk?'':'contenteditable oninput="markDirty()"'}>${r[k]}</span></td>`;
+  }).join('')+`<td class="px-3 py-2 text-right"><button onclick="this.closest('tr').remove();markDirty()" class="text-gray-300 hover:text-red-500 text-[11px]">🗑</button></td></tr>`).join('');
+}
+
+function addRow(){
+  const t = SCHEMA[currentTable];
+  if (!t.rows || t.rows.length===0){ alert('설계만 완료된 테이블입니다. 먼저 SQL로 생성하세요.'); return; }
+  const blank = {}; Object.keys(t.rows[0]).forEach(k=>blank[k]= k==='id'?'(new)':'');
+  t.rows.unshift(blank); markDirty(); renderGrid();
+  document.querySelector('#gridBody tr')?.classList.add('row-new');
+}
+function markDirty(){ dirty=true; updateDirty(); }
+function updateDirty(){ document.getElementById('dirtyBadge').classList.toggle('hidden', !dirty); }
+function saveAll(){ dirty=false; updateDirty(); alert('변경사항 저장 (목업) — 실제로는 PATCH /api/admin/db/'+currentTable); }
+
+/* ── 스키마 뷰 ── */
+function renderSchema(){
+  const t = SCHEMA[currentTable];
+  document.getElementById('schemaBody').innerHTML = t.cols.map(col=>{
+    const isPk = String(col.key).includes('PK');
+    const isFk = String(col.key).includes('FK');
+    const keyBadge = col.key ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isPk?'bg-amber-100 text-amber-700':isFk?'bg-blue-100 text-blue-700':'bg-gray-100 text-gray-500'}">${col.key}</span>` : '';
+    return `<tr class="hover:bg-gray-50">
+      <td class="px-4 py-2 font-bold text-gray-800">${isPk?'🔑 ':''}${col.name}</td>
+      <td class="px-4 py-2"><code class="text-[10px] text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">${col.type}</code></td>
+      <td class="px-4 py-2">${keyBadge}</td>
+      <td class="px-4 py-2 text-gray-500">${col.desc||'—'}</td></tr>`;
+  }).join('');
+  const fks = t.cols.filter(col=>String(col.key).includes('FK'));
+  document.getElementById('fkBox').innerHTML = fks.length ? `
+    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+      <div class="text-[11px] font-black text-blue-800 mb-2">🔗 외래키(FK) 관계 ${fks.length}건</div>
+      <div class="flex flex-wrap gap-2">${fks.map(col=>{
+        const target = String(col.key).replace('FK','').replace('→','').replace('UNIQUE','').replace('CASCADE','').replace('SET NULL','').trim();
+        return `<span class="text-[10px] bg-white border border-blue-200 rounded-lg px-2.5 py-1"><code>${col.name}</code> <span class="text-blue-400">→</span> <code class="text-blue-700">${target||'?'}</code></span>`;
+      }).join('')}</div></div>` : '';
+}
+
+/* ── SQL 뷰 ── */
+function typeToSql(t){ return t.replace('UUID','UUID').replace('TIMESTAMPTZ','TIMESTAMP WITH TIME ZONE'); }
+function renderSql(){
+  const t = SCHEMA[currentTable];
+  let sql = `CREATE TABLE IF NOT EXISTS ${currentTable} (\n`;
+  sql += t.cols.map(col=>{
+    let line = `  ${col.name.padEnd(24)} ${typeToSql(col.type)}`;
+    if (String(col.key).includes('PK')) line += ' PRIMARY KEY';
+    if (String(col.key).includes('UNIQUE')) line += ' UNIQUE';
+    if (String(col.key).includes('NOT NULL')) line += ' NOT NULL';
+    return line;
+  }).join(',\n');
+  sql += '\n);';
+  if (t.status==='built') sql = `-- ✅ 이 테이블은 schema.sql 에 실제 존재합니다.\n` + sql;
+  else sql = `-- ⚙ 설계 단계 — 아래 SQL을 Supabase SQL Editor에 실행하면 생성됩니다.\n` + sql;
+  document.getElementById('sqlBox').textContent = sql;
+}
+function copySql(){ navigator.clipboard?.writeText(document.getElementById('sqlBox').textContent); alert('SQL 복사됨 (목업)'); }
+
+/* init */
+renderTableList();
+renderAll();
+</script>
+</body>
+</html>

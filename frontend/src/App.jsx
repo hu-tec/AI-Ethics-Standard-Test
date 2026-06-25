@@ -13,6 +13,7 @@ import Certificate from './pages/Certificate'
 import Pricing from './pages/Pricing'
 import ExpertRecruit from './pages/ExpertRecruit'
 import Community from './pages/Community'
+import ExamRegistration from './pages/ExamRegistration'
 import PaidDiagnosisHub from './pages/PaidDiagnosisHub'
 import PaidDiagnosis1 from './pages/PaidDiagnosis1'
 import PaidDiagnosis2 from './pages/PaidDiagnosis2'
@@ -30,7 +31,8 @@ export default function App() {
         <Header />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ExamRegistration />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/fields" element={<Fields />} />
             <Route path="/process" element={<Process />} />
@@ -39,6 +41,8 @@ export default function App() {
             <Route path="/education" element={<Education />} />
             <Route path="/certificate" element={<Certificate />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/exams" element={<ExamRegistration />} />
+            <Route path="/exam-registration" element={<ExamRegistration />} />
             <Route path="/expert" element={<ExpertRecruit />} />
             <Route path="/community" element={<Community />} />
             <Route path="/paid-diagnosis" element={<ProtectedRoute><PaidDiagnosisHub /></ProtectedRoute>} />

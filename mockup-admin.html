@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휴텍씨 — 관리자 페이지 목업</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  * { font-family: 'Noto Sans KR', sans-serif; }
+  .sidebar-active { background: #16a34a; color: white; }
+  .bar { transition: width 0.8s ease; }
+</style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<!-- 전체 레이아웃 -->
+<div class="flex h-screen overflow-hidden">
+
+  <!-- ── 사이드바 ── -->
+  <aside class="w-56 bg-gray-900 text-gray-200 flex flex-col flex-shrink-0">
+    <!-- 로고 -->
+    <div class="px-5 py-4 border-b border-gray-700">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white font-black text-xs">AI</div>
+        <div>
+          <div class="text-xs font-black text-white leading-tight">휴텍씨</div>
+          <div class="text-[9px] text-gray-400">관리자 시스템</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 관리자 정보 -->
+    <div class="px-5 py-3 border-b border-gray-700 bg-gray-800">
+      <div class="text-[10px] text-gray-400">로그인 관리자</div>
+      <div class="text-xs font-bold text-white">김관리 (마스터)</div>
+    </div>
+
+    <!-- 메뉴 -->
+    <nav class="flex-1 py-2 overflow-y-auto">
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-1">대시보드</div>
+      <a href="#dashboard" onclick="showTab('dashboard')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700 sidebar-active" id="nav-dashboard">
+        <span>📊</span> 통합 대시보드
+      </a>
+
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">회원 관리</div>
+      <a href="#members" onclick="showTab('members')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-members">
+        <span>👤</span> 회원 목록
+      </a>
+      <a href="#experts" onclick="showTab('experts')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-experts">
+        <span>🎓</span> 전문가 관리
+      </a>
+      <a href="#b2b" onclick="showTab('b2b')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-b2b">
+        <span>🏢</span> B2B 기업
+      </a>
+
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">시험 관리</div>
+      <a href="#registrations" onclick="showTab('registrations')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-registrations">
+        <span>📝</span> 접수 현황
+      </a>
+      <a href="#diagnosis" onclick="showTab('diagnosis')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-diagnosis">
+        <span>🔬</span> 진단 결과
+      </a>
+      <a href="#certificates" onclick="showTab('certificates')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-certificates">
+        <span>🏅</span> 자격증 발급
+      </a>
+
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">결제 관리</div>
+      <a href="#payments" onclick="showTab('payments')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-payments">
+        <span>💳</span> 결제 내역
+      </a>
+      <a href="#coupons" onclick="showTab('coupons')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-coupons">
+        <span>🎟️</span> 쿠폰 관리
+      </a>
+
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">마케팅</div>
+      <a href="#stats" onclick="showTab('stats')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-stats">
+        <span>📈</span> 통계 분석
+      </a>
+      <a href="#notifications" onclick="showTab('notifications')" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700" id="nav-notifications">
+        <span>🔔</span> 알림 발송
+      </a>
+
+      <div class="px-4 py-1.5 text-[9px] text-gray-500 uppercase tracking-widest mt-2">콘텐츠</div>
+      <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700">
+        <span>📢</span> 공지사항
+      </a>
+      <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-xs hover:bg-gray-700">
+        <span>❓</span> FAQ 관리
+      </a>
+    </nav>
+
+    <div class="px-4 py-3 border-t border-gray-700">
+      <button class="text-[10px] text-gray-400 hover:text-white flex items-center gap-1">⬅ 로그아웃</button>
+    </div>
+  </aside>
+
+  <!-- ── 메인 영역 ── -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- 상단 헤더 -->
+    <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+      <div>
+        <h1 class="text-sm font-black text-gray-900" id="page-title">통합 대시보드</h1>
+        <p class="text-[10px] text-gray-400" id="page-sub">2026년 6월 24일 기준 실시간 현황</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-[10px] text-gray-400 bg-green-50 px-2 py-1 rounded-full border border-green-200">● 실시간 연동</span>
+        <div class="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center text-white text-xs font-bold">김</div>
+      </div>
+    </header>
+
+    <!-- 콘텐츠 스크롤 영역 -->
+    <main class="flex-1 overflow-y-auto p-5">
+
+      <!-- ══════════════════════════════
+           탭: 대시보드
+      ══════════════════════════════ -->
+      <div id="tab-dashboard">
+        <!-- KPI 카드 -->
+        <div class="grid grid-cols-4 gap-4 mb-5">
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div class="text-[10px] text-gray-400 mb-1">전체 회원</div>
+            <div class="text-2xl font-black text-blue-600">1,284</div>
+            <div class="text-[10px] text-green-500 mt-1">▲ 23 이번 주</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div class="text-[10px] text-gray-400 mb-1">이번 달 접수</div>
+            <div class="text-2xl font-black text-green-600">347</div>
+            <div class="text-[10px] text-green-500 mt-1">▲ 12% 전월 대비</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div class="text-[10px] text-gray-400 mb-1">이번 달 매출</div>
+            <div class="text-2xl font-black text-purple-600">₩8.4M</div>
+            <div class="text-[10px] text-green-500 mt-1">▲ 5% 전월 대비</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div class="text-[10px] text-gray-400 mb-1">오늘 진단</div>
+            <div class="text-2xl font-black text-amber-600">42</div>
+            <div class="text-[10px] text-gray-400 mt-1">무료 31 / 유료 11</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mb-5">
+          <!-- 퍼널 분석 -->
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm col-span-1">
+            <h3 class="text-xs font-black text-gray-900 mb-3">전환 퍼널 (funnel_stage)</h3>
+            <div class="space-y-2">
+              <div>
+                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-gray-500">가입 완료</span><span class="font-bold">1,284명</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-blue-400 h-2 rounded bar" style="width:100%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-gray-500">인증 완료</span><span class="font-bold">1,041명</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-green-400 h-2 rounded bar" style="width:81%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-gray-500">첫 시험 응시</span><span class="font-bold">732명</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-yellow-400 h-2 rounded bar" style="width:57%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-gray-500">유료 전환</span><span class="font-bold">289명</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-purple-400 h-2 rounded bar" style="width:22%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 가입 채널 -->
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm col-span-1">
+            <h3 class="text-xs font-black text-gray-900 mb-3">가입 채널 (utm_source)</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+                <span class="text-[10px] text-gray-600 flex-1">카카오톡</span>
+                <div class="w-20 bg-gray-100 rounded h-1.5"><div class="bg-yellow-400 h-1.5 rounded" style="width:68%"></div></div>
+                <span class="text-[10px] font-bold w-8 text-right">874</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                <span class="text-[10px] text-gray-600 flex-1">네이버</span>
+                <div class="w-20 bg-gray-100 rounded h-1.5"><div class="bg-green-400 h-1.5 rounded" style="width:38%"></div></div>
+                <span class="text-[10px] font-bold w-8 text-right">241</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                <span class="text-[10px] text-gray-600 flex-1">구글</span>
+                <div class="w-20 bg-gray-100 rounded h-1.5"><div class="bg-blue-400 h-1.5 rounded" style="width:22%"></div></div>
+                <span class="text-[10px] font-bold w-8 text-right">112</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span class="text-[10px] text-gray-600 flex-1">직접 가입</span>
+                <div class="w-20 bg-gray-100 rounded h-1.5"><div class="bg-gray-400 h-1.5 rounded" style="width:9%"></div></div>
+                <span class="text-[10px] font-bold w-8 text-right">57</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 구독 현황 -->
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm col-span-1">
+            <h3 class="text-xs font-black text-gray-900 mb-3">구독 현황</h3>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                <div>
+                  <div class="text-[10px] font-bold text-purple-700">프리미엄</div>
+                  <div class="text-[9px] text-purple-400">₩29,000/월</div>
+                </div>
+                <div class="text-lg font-black text-purple-700">48</div>
+              </div>
+              <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                <div>
+                  <div class="text-[10px] font-bold text-blue-700">스탠다드</div>
+                  <div class="text-[9px] text-blue-400">₩19,000/월</div>
+                </div>
+                <div class="text-lg font-black text-blue-700">127</div>
+              </div>
+              <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
+                <div>
+                  <div class="text-[10px] font-bold text-green-700">베이직</div>
+                  <div class="text-[9px] text-green-400">₩9,900/월</div>
+                </div>
+                <div class="text-lg font-black text-green-700">114</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 최근 접수 테이블 -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <h3 class="text-xs font-black text-gray-900">최근 시험 접수 (exam_registrations)</h3>
+            <button class="text-[10px] text-green-600 font-bold border border-green-200 px-2 py-1 rounded-lg hover:bg-green-50">전체 보기</button>
+          </div>
+          <table class="w-full text-[10px]">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">접수번호</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">회원</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">시험종목</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">등급</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">접수상태</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">결제금액</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">접수일</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5 font-mono text-gray-400">EX260624001</td>
+                <td class="px-4 py-2.5"><div class="font-bold text-gray-900">박지은</div><div class="text-gray-400">jieun@email.com</div></td>
+                <td class="px-4 py-2.5"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">AI 윤리</span></td>
+                <td class="px-4 py-2.5 font-bold">기초</td>
+                <td class="px-4 py-2.5"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">접수완료</span></td>
+                <td class="px-4 py-2.5 font-bold text-gray-900">₩35,000</td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 14:32</td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5 font-mono text-gray-400">EX260624002</td>
+                <td class="px-4 py-2.5"><div class="font-bold text-gray-900">이민준</div><div class="text-gray-400">minjun@email.com</div></td>
+                <td class="px-4 py-2.5"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">AI 번역</span></td>
+                <td class="px-4 py-2.5 font-bold">전문 1급</td>
+                <td class="px-4 py-2.5"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">접수완료</span></td>
+                <td class="px-4 py-2.5 font-bold text-gray-900">₩75,000</td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 13:18</td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5 font-mono text-gray-400">EX260624003</td>
+                <td class="px-4 py-2.5"><div class="font-bold text-gray-900">삼성전자(단체)</div><div class="text-gray-400">hr@samsung.com</div></td>
+                <td class="px-4 py-2.5"><span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">AI 프롬프트</span></td>
+                <td class="px-4 py-2.5 font-bold">중급</td>
+                <td class="px-4 py-2.5"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">결제대기</span></td>
+                <td class="px-4 py-2.5 font-bold text-gray-900">₩450,000</td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 11:05</td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5 font-mono text-gray-400">EX260623041</td>
+                <td class="px-4 py-2.5"><div class="font-bold text-gray-900">김서연</div><div class="text-gray-400">seoyeon@email.com</div></td>
+                <td class="px-4 py-2.5"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">AI 윤리</span></td>
+                <td class="px-4 py-2.5 font-bold">전문</td>
+                <td class="px-4 py-2.5"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">응시완료</span></td>
+                <td class="px-4 py-2.5 font-bold text-gray-900">₩60,000</td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.23 09:41</td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5 font-mono text-gray-400">EX260623040</td>
+                <td class="px-4 py-2.5"><div class="font-bold text-gray-900">최현우</div><div class="text-gray-400">hyunwoo@email.com</div></td>
+                <td class="px-4 py-2.5"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">AI 번역</span></td>
+                <td class="px-4 py-2.5 font-bold">교육 3급</td>
+                <td class="px-4 py-2.5"><span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">취소</span></td>
+                <td class="px-4 py-2.5 font-bold text-gray-400 line-through">₩35,000</td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.23 08:22</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           탭: 회원 목록
+      ══════════════════════════════ -->
+      <div id="tab-members" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm mb-4">
+          <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+            <h3 class="text-xs font-black text-gray-900 flex-1">회원 목록 (users)</h3>
+            <select class="border border-gray-200 rounded-lg px-2 py-1 text-[10px] text-gray-600">
+              <option>전체 역할</option><option>일반 회원</option><option>전문가</option><option>관리자</option>
+            </select>
+            <select class="border border-gray-200 rounded-lg px-2 py-1 text-[10px] text-gray-600">
+              <option>퍼널 전체</option><option>가입완료</option><option>인증완료</option><option>첫시험</option><option>유료전환</option>
+            </select>
+            <select class="border border-gray-200 rounded-lg px-2 py-1 text-[10px] text-gray-600">
+              <option>구독 전체</option><option>프리미엄</option><option>스탠다드</option><option>베이직</option><option>없음</option>
+            </select>
+            <input type="text" placeholder="이름·이메일·번호 검색" class="border border-gray-200 rounded-lg px-3 py-1 text-[10px] w-40">
+            <button class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">CSV 내보내기</button>
+          </div>
+          <table class="w-full text-[10px]">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">회원번호</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">이름</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">이메일/번호</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">역할</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">구독</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">퍼널 단계</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">포인트</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">가입채널</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">마케팅동의</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">가입일</th>
+                <th class="text-left px-3 py-2 font-bold text-gray-500">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-3 py-2.5 font-mono text-gray-400">XX260001</td>
+                <td class="px-3 py-2.5 font-bold">박지은</td>
+                <td class="px-3 py-2.5 text-gray-500">jieun@email.com</td>
+                <td class="px-3 py-2.5"><span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">일반</span></td>
+                <td class="px-3 py-2.5"><span class="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">프리미엄</span></td>
+                <td class="px-3 py-2.5"><span class="bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded">유료전환</span></td>
+                <td class="px-3 py-2.5 font-bold text-green-600">12,500P</td>
+                <td class="px-3 py-2.5"><span class="bg-yellow-50 text-yellow-600 px-1.5 py-0.5 rounded">카카오</span></td>
+                <td class="px-3 py-2.5 text-green-600">✓</td>
+                <td class="px-3 py-2.5 text-gray-400">26.01.15</td>
+                <td class="px-3 py-2.5"><button class="text-blue-500 hover:underline">상세</button></td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-3 py-2.5 font-mono text-gray-400">XX260002</td>
+                <td class="px-3 py-2.5 font-bold">이민준</td>
+                <td class="px-3 py-2.5 text-gray-500">minjun@email.com</td>
+                <td class="px-3 py-2.5"><span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">전문가</span></td>
+                <td class="px-3 py-2.5"><span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">스탠다드</span></td>
+                <td class="px-3 py-2.5"><span class="bg-green-50 text-green-600 px-1.5 py-0.5 rounded">첫시험</span></td>
+                <td class="px-3 py-2.5 font-bold text-green-600">3,200P</td>
+                <td class="px-3 py-2.5"><span class="bg-green-50 text-green-600 px-1.5 py-0.5 rounded">네이버</span></td>
+                <td class="px-3 py-2.5 text-red-400">✗</td>
+                <td class="px-3 py-2.5 text-gray-400">26.02.03</td>
+                <td class="px-3 py-2.5"><button class="text-blue-500 hover:underline">상세</button></td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-3 py-2.5 font-mono text-gray-400">XX260003</td>
+                <td class="px-3 py-2.5 font-bold">김서연</td>
+                <td class="px-3 py-2.5 text-gray-500">seoyeon@email.com</td>
+                <td class="px-3 py-2.5"><span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">일반</span></td>
+                <td class="px-3 py-2.5"><span class="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">없음</span></td>
+                <td class="px-3 py-2.5"><span class="bg-yellow-50 text-yellow-600 px-1.5 py-0.5 rounded">인증완료</span></td>
+                <td class="px-3 py-2.5 text-gray-400">0P</td>
+                <td class="px-3 py-2.5"><span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">구글</span></td>
+                <td class="px-3 py-2.5 text-green-600">✓</td>
+                <td class="px-3 py-2.5 text-gray-400">26.03.22</td>
+                <td class="px-3 py-2.5"><button class="text-blue-500 hover:underline">상세</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex items-center justify-between px-4 py-2.5 border-t border-gray-100">
+            <span class="text-[10px] text-gray-400">총 1,284명 / 1페이지</span>
+            <div class="flex gap-1">
+              <button class="px-2 py-1 text-[10px] border border-gray-200 rounded">이전</button>
+              <button class="px-2 py-1 text-[10px] bg-green-600 text-white rounded">1</button>
+              <button class="px-2 py-1 text-[10px] border border-gray-200 rounded">2</button>
+              <button class="px-2 py-1 text-[10px] border border-gray-200 rounded">3</button>
+              <button class="px-2 py-1 text-[10px] border border-gray-200 rounded">다음</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           탭: 진단 결과
+      ══════════════════════════════ -->
+      <div id="tab-diagnosis" class="hidden">
+        <!-- 필터 -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 mb-4 flex flex-wrap gap-2 items-center">
+          <select class="border border-gray-200 rounded-lg px-2 py-1 text-[10px]">
+            <option>전체 진단</option><option>무료 진단</option><option>유료 1단계</option><option>유료 2단계</option><option>유료 3단계</option>
+          </select>
+          <select class="border border-gray-200 rounded-lg px-2 py-1 text-[10px]">
+            <option>전체 등급</option><option>S등급</option><option>A등급</option><option>B등급</option><option>C등급</option>
+          </select>
+          <input type="date" class="border border-gray-200 rounded-lg px-2 py-1 text-[10px]" value="2026-06-01">
+          <span class="text-[10px] text-gray-400">~</span>
+          <input type="date" class="border border-gray-200 rounded-lg px-2 py-1 text-[10px]" value="2026-06-24">
+          <input type="text" placeholder="회원 이름·이메일 검색" class="border border-gray-200 rounded-lg px-2 py-1 text-[10px] w-40">
+          <button class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold ml-auto">데이터 내보내기</button>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="grid grid-cols-4 gap-3 mb-4">
+          <div class="bg-white rounded-xl p-3 border border-gray-100 shadow-sm text-center">
+            <div class="text-[10px] text-gray-400">전체 진단 수</div>
+            <div class="text-xl font-black text-gray-900">2,841</div>
+          </div>
+          <div class="bg-green-50 rounded-xl p-3 border border-green-100 shadow-sm text-center">
+            <div class="text-[10px] text-green-600">S등급 (90%↑)</div>
+            <div class="text-xl font-black text-green-700">312 <span class="text-xs font-normal">명</span></div>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3 border border-blue-100 shadow-sm text-center">
+            <div class="text-[10px] text-blue-600">A등급 (70~89%)</div>
+            <div class="text-xl font-black text-blue-700">743 <span class="text-xs font-normal">명</span></div>
+          </div>
+          <div class="bg-amber-50 rounded-xl p-3 border border-amber-100 shadow-sm text-center">
+            <div class="text-[10px] text-amber-600">B/C등급 (70%↓)</div>
+            <div class="text-xl font-black text-amber-700">1,786 <span class="text-xs font-normal">명</span></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="text-xs font-black text-gray-900">진단 결과 목록 (diagnosis_results)</h3>
+          </div>
+          <table class="w-full text-[10px]">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">진단유형</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">회원</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">점수</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">등급</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">취약 영역 (axis_scores)</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">일시</th>
+                <th class="text-left px-4 py-2 font-bold text-gray-500">상세</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">무료</span></td>
+                <td class="px-4 py-2.5"><div class="font-bold">박지은</div><div class="text-gray-400">jieun@email.com</div></td>
+                <td class="px-4 py-2.5"><div class="font-black text-gray-900">14/20</div><div class="text-gray-400">70%</div></td>
+                <td class="px-4 py-2.5"><span class="font-black text-blue-600">A</span></td>
+                <td class="px-4 py-2.5">
+                  <div class="flex gap-1 flex-wrap">
+                    <span class="bg-red-50 text-red-500 px-1.5 py-0.5 rounded text-[9px]">저작권 45%</span>
+                    <span class="bg-orange-50 text-orange-500 px-1.5 py-0.5 rounded text-[9px]">컴플라이언스 50%</span>
+                  </div>
+                </td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 14:35</td>
+                <td class="px-4 py-2.5"><button class="text-blue-500 hover:underline">보기</button></td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">유료1단계</span></td>
+                <td class="px-4 py-2.5"><div class="font-bold">이민준</div><div class="text-gray-400">minjun@email.com</div></td>
+                <td class="px-4 py-2.5"><div class="font-black text-gray-900">18/20</div><div class="text-gray-400">90%</div></td>
+                <td class="px-4 py-2.5"><span class="font-black text-green-600">S</span></td>
+                <td class="px-4 py-2.5">
+                  <span class="bg-green-50 text-green-500 px-1.5 py-0.5 rounded text-[9px]">전 영역 우수</span>
+                </td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 13:20</td>
+                <td class="px-4 py-2.5"><button class="text-blue-500 hover:underline">보기</button></td>
+              </tr>
+              <tr class="border-t border-gray-50 hover:bg-gray-50">
+                <td class="px-4 py-2.5"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">무료(비로그인)</span></td>
+                <td class="px-4 py-2.5"><span class="text-gray-400 italic">비로그인</span></td>
+                <td class="px-4 py-2.5"><div class="font-black text-gray-900">9/20</div><div class="text-gray-400">45%</div></td>
+                <td class="px-4 py-2.5"><span class="font-black text-amber-600">B</span></td>
+                <td class="px-4 py-2.5">
+                  <div class="flex gap-1 flex-wrap">
+                    <span class="bg-red-50 text-red-500 px-1.5 py-0.5 rounded text-[9px]">안전성 30%</span>
+                    <span class="bg-red-50 text-red-500 px-1.5 py-0.5 rounded text-[9px]">공정성 35%</span>
+                  </div>
+                </td>
+                <td class="px-4 py-2.5 text-gray-400">26.06.24 11:09</td>
+                <td class="px-4 py-2.5"><button class="text-blue-500 hover:underline">보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           탭: 통계 분석
+      ══════════════════════════════ -->
+      <div id="tab-stats" class="hidden">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <h3 class="text-xs font-black text-gray-900 mb-4">월별 매출 추이 (daily_statistics)</h3>
+            <div class="flex items-end gap-2 h-28">
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-200 rounded-t w-full" style="height:40%"></div>
+                <div class="text-[9px] text-gray-400">1월</div>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-300 rounded-t w-full" style="height:55%"></div>
+                <div class="text-[9px] text-gray-400">2월</div>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-400 rounded-t w-full" style="height:70%"></div>
+                <div class="text-[9px] text-gray-400">3월</div>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-500 rounded-t w-full" style="height:65%"></div>
+                <div class="text-[9px] text-gray-400">4월</div>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-600 rounded-t w-full" style="height:80%"></div>
+                <div class="text-[9px] text-gray-400">5월</div>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="bg-green-700 rounded-t w-full" style="height:95%"></div>
+                <div class="text-[9px] text-gray-400">6월</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <h3 class="text-xs font-black text-gray-900 mb-4">퍼널 단계별 이탈률 분석 (utm_tracking)</h3>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-[10px] mb-1"><span>가입 → 인증</span><span class="font-bold text-green-600">이탈 19%</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-green-500 h-2 rounded" style="width:81%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] mb-1"><span>인증 → 첫 시험</span><span class="font-bold text-yellow-600">이탈 30%</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-yellow-500 h-2 rounded" style="width:70%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] mb-1"><span>첫 시험 → 유료 전환</span><span class="font-bold text-red-600">이탈 61%</span></div>
+                <div class="w-full bg-gray-100 rounded h-2"><div class="bg-red-400 h-2 rounded" style="width:39%"></div></div>
+              </div>
+            </div>
+            <div class="mt-3 p-2 bg-red-50 rounded-lg text-[9px] text-red-600">
+              ⚠ 첫 시험 → 유료 전환 이탈률 61% — 이 단계에서 쿠폰/AI리포트 업셀 캠페인 집중 권장
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기타 탭 자리 확인용 -->
+      <div id="tab-registrations" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">접수 현황 탭 — 대시보드 테이블 참조</div>
+      </div>
+      <div id="tab-payments" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">결제 내역 탭</div>
+      </div>
+      <div id="tab-coupons" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">쿠폰 관리 탭</div>
+      </div>
+      <div id="tab-notifications" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">알림 발송 탭</div>
+      </div>
+      <div id="tab-experts" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">전문가 관리 탭</div>
+      </div>
+      <div id="tab-b2b" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">B2B 기업 탭</div>
+      </div>
+      <div id="tab-certificates" class="hidden">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-xs text-gray-400">자격증 발급 탭</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const tabs = ['dashboard','members','experts','b2b','registrations','diagnosis','certificates','payments','coupons','stats','notifications'];
+function showTab(name) {
+  tabs.forEach(t => {
+    document.getElementById('tab-' + t).classList.add('hidden');
+    const nav = document.getElementById('nav-' + t);
+    if (nav) nav.classList.remove('sidebar-active');
+  });
+  document.getElementById('tab-' + name).classList.remove('hidden');
+  const nav = document.getElementById('nav-' + name);
+  if (nav) nav.classList.add('sidebar-active');
+  const titles = {
+    dashboard: ['통합 대시보드', '2026년 6월 24일 기준 실시간 현황'],
+    members: ['회원 목록', 'users 테이블 — 전체 회원 관리'],
+    diagnosis: ['진단 결과', 'diagnosis_results 테이블 — AI 윤리 진단 이력'],
+    stats: ['통계 분석', 'daily_statistics + utm_tracking — 마케팅 인사이트'],
+    registrations: ['접수 현황', 'exam_registrations 테이블'],
+    payments: ['결제 내역', 'payments + refunds 테이블'],
+    coupons: ['쿠폰 관리', 'coupons + user_coupons 테이블'],
+    experts: ['전문가 관리', 'experts 테이블'],
+    b2b: ['B2B 기업', 'b2b_companies + group_registrations 테이블'],
+    certificates: ['자격증 발급', 'certificates 테이블'],
+    notifications: ['알림 발송', 'notification_logs 테이블 — 문자/카카오/이메일'],
+  };
+  document.getElementById('page-title').textContent = titles[name][0];
+  document.getElementById('page-sub').textContent = titles[name][1];
+}
+</script>
+</body>
+</html>

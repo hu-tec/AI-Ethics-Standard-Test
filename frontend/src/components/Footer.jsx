@@ -1,44 +1,51 @@
 import { Link } from 'react-router-dom'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, MapPin, Phone } from 'lucide-react'
+
+const serviceLinks = [
+  { label: '시험 안내', path: '/exams#guide' },
+  { label: '시험 일정', path: '/exams#schedule' },
+  { label: '시험 접수', path: '/exams#apply' },
+  { label: '결제·수험표', path: '/exams#payment' },
+  { label: '성적·자격증', path: '/exams#results' },
+]
+
+const operationLinks = [
+  { label: 'AI 번역 시험', path: '/exams#guide' },
+  { label: 'AI 프롬프트 시험', path: '/exams#guide' },
+  { label: 'AI 윤리 시험', path: '/exams#guide' },
+  { label: 'B2B 단체접수', path: '/exams#apply' },
+  { label: '관리자', path: '/admin' },
+]
 
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* 브랜드 */}
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-accent-500">
+                <span className="text-sm font-bold text-white">HT</span>
               </div>
               <div>
-                <div className="font-bold text-white text-sm">AI 윤리</div>
-                <div className="text-xs text-gray-400">자격·진단·교육·인증</div>
+                <div className="text-sm font-bold text-white">휴텍씨 AI 시험</div>
+                <div className="text-xs text-gray-400">시험 접수·결제·응시·자격증</div>
               </div>
             </div>
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">
-              AI 시대의 경쟁력은 기술이 아니라 신뢰에서 완성됩니다.
-              AI 윤리는 에티켓이 아니라 컴플라이언스입니다.
+            <p className="mb-4 text-sm leading-relaxed text-gray-400">
+              AI 번역 시험을 중심으로 프롬프트, 윤리 시험까지 확장하는 통합 시험 접수 플랫폼입니다.
             </p>
             <p className="text-xs text-gray-500">
-              사단법인 국제통역번역협회와 함께 자격 교육 및 발급 체계를 운영합니다.
+              시험 일정 조회부터 접수, 결제, 수험표 확인, 결과 및 자격증 발급까지 한 흐름으로 운영합니다.
             </p>
           </div>
 
-          {/* 서비스 */}
           <div>
-            <h4 className="font-semibold text-white mb-4">서비스</h4>
+            <h4 className="mb-4 font-semibold text-white">접수 메뉴</h4>
             <ul className="space-y-2 text-sm">
-              {[
-                { label: 'AI 윤리 진단', path: '/diagnosis' },
-                { label: 'AI 윤리 교육', path: '/education' },
-                { label: '자격 체계', path: '/certificate' },
-                { label: 'AI 윤리 인증', path: '/process' },
-                { label: '기업 컨설팅', path: '/process' },
-              ].map((item) => (
-                <li key={item.path}>
-                  <Link to={item.path} className="hover:text-primary-400 transition-colors">
+              {serviceLinks.map((item) => (
+                <li key={`${item.label}-${item.path}`}>
+                  <Link to={item.path} className="transition-colors hover:text-primary-400">
                     {item.label}
                   </Link>
                 </li>
@@ -46,19 +53,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 정보 */}
           <div>
-            <h4 className="font-semibold text-white mb-4">안내</h4>
+            <h4 className="mb-4 font-semibold text-white">운영 모듈</h4>
             <ul className="space-y-2 text-sm">
-              {[
-                { label: 'AI 윤리 소개', path: '/about' },
-                { label: 'AI 윤리 현황', path: '/status' },
-                { label: '비용 안내', path: '/pricing' },
-                { label: '전문가 모집', path: '/expert' },
-                { label: '커뮤니티', path: '/community' },
-              ].map((item) => (
-                <li key={item.path}>
-                  <Link to={item.path} className="hover:text-primary-400 transition-colors">
+              {operationLinks.map((item) => (
+                <li key={`${item.label}-${item.path}`}>
+                  <Link to={item.path} className="transition-colors hover:text-primary-400">
                     {item.label}
                   </Link>
                 </li>
@@ -66,38 +66,34 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 연락처 */}
           <div>
-            <h4 className="font-semibold text-white mb-4">연락처</h4>
+            <h4 className="mb-4 font-semibold text-white">연락처</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
-                <Mail size={15} className="mt-0.5 text-primary-400 shrink-0" />
-                <span>info@aiethics.kr</span>
+                <Mail size={15} className="mt-0.5 shrink-0 text-primary-400" />
+                <span>exam@hutec.kr</span>
               </li>
               <li className="flex items-start gap-2">
-                <Phone size={15} className="mt-0.5 text-primary-400 shrink-0" />
+                <Phone size={15} className="mt-0.5 shrink-0 text-primary-400" />
                 <span>02-0000-0000</span>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin size={15} className="mt-0.5 text-primary-400 shrink-0" />
+                <MapPin size={15} className="mt-0.5 shrink-0 text-primary-400" />
                 <span>서울특별시</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-10 pt-6 space-y-2">
-          <p className="text-xs text-gray-500 leading-relaxed">
-            ※ 본 자격은 민간자격입니다. 국가공인 자격이 아닙니다.
+        <div className="mt-10 space-y-2 border-t border-gray-800 pt-6">
+          <p className="text-xs leading-relaxed text-gray-500">
+            ※ 본 화면은 시험 접수 플랫폼 프론트엔드 시안이며, 민간자격 운영 고지와 환불 규정은 실제 운영 정책에 맞춰 확정해야 합니다.
           </p>
-          <p className="text-xs text-gray-500 leading-relaxed">
-            ※ 특허는 평가 방법의 전문성과 관련된 것이며, 자격의 국가공인 여부를 의미하지 않습니다.
+          <p className="text-xs leading-relaxed text-gray-500">
+            ※ 시험별 접수 가능 여부와 결과 발표일은 운영 관리자가 등록한 일정 기준으로 표시됩니다.
           </p>
-          <p className="text-xs text-gray-500 leading-relaxed">
-            ※ 진단 결과는 교육·컨설팅 목적의 참고자료이며 법률 자문을 대체하지 않습니다.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-2">
-            <p className="text-xs text-gray-600">© 2025 AI 윤리 자격·진단·교육·인증. All rights reserved.</p>
+          <div className="flex flex-col items-start justify-between gap-2 pt-2 sm:flex-row sm:items-center">
+            <p className="text-xs text-gray-600">© 2026 휴텍씨 AI 시험 접수 플랫폼. All rights reserved.</p>
             <div className="flex gap-4 text-xs text-gray-600">
               <a href="#" className="hover:text-gray-400">개인정보처리방침</a>
               <a href="#" className="hover:text-gray-400">이용약관</a>

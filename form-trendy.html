@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휴텍씨 — 신청서 (트렌드형)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+*{font-family:'Noto Sans KR',sans-serif;}
+.gradient-hero{background:linear-gradient(135deg,#0f172a 0%,#064e3b 100%);}
+.float-label input:focus + label,
+.float-label input:not(:placeholder-shown) + label{transform:translateY(-22px) scale(.8);color:#16a34a;font-weight:700;}
+.float-label label{transition:.2s ease;pointer-events:none;}
+.step-bar{background:linear-gradient(90deg,#16a34a var(--prog),#e5e7eb var(--prog));}
+.quiz-card{transition:.2s;border:2px solid #e5e7eb;}
+.quiz-card:hover,.quiz-card.picked{border-color:#16a34a;background:#f0fdf4;}
+.quiz-card.picked{box-shadow:0 0 0 3px #bbf7d0;}
+.social-badge{animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.field-group input,
+.field-group select,
+.field-group textarea{border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:13px;width:100%;outline:none;transition:.2s;}
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus{border-color:#16a34a;box-shadow:0 0 0 3px #dcfce7;}
+.choice-chip{border:1.5px solid #e5e7eb;border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;}
+.choice-chip.on{border-color:#16a34a;background:#f0fdf4;color:#15803d;}
+.tag-badge{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 10px;font-size:10px;font-weight:700;}
+</style>
+</head>
+<body class="bg-gray-50">
+
+<!-- ── 상단 히어로 ── -->
+<div class="gradient-hero text-white py-8 px-6 text-center">
+  <div class="max-w-xl mx-auto">
+    <div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-xs font-bold mb-4 social-badge">
+      🔥 지금 이 순간 <strong class="text-green-300">1,243명</strong>이 접수 중
+    </div>
+    <h1 class="text-2xl font-black mb-2">AI 자격증, 지금이 기회예요</h1>
+    <p class="text-gray-300 text-sm">부담 없이 내 수준부터 확인해보세요 — 1분이면 충분해요</p>
+  </div>
+</div>
+
+<!-- ── 진행 바 ── -->
+<div class="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
+  <div class="max-w-xl mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="text-xs font-bold text-gray-500" id="step-label">STEP 1 · AI 유형 확인</div>
+    <div class="text-xs text-green-600 font-black" id="step-pct">25%</div>
+  </div>
+  <div class="h-1 step-bar" id="prog-bar" style="--prog:25%"></div>
+</div>
+
+<div class="max-w-xl mx-auto px-4 py-6 space-y-4" id="all-steps">
+
+<!-- ══════════════════════════════
+     STEP 1 · AI 유형 진단 (쿠킹 유형처럼)
+══════════════════════════════ -->
+<div id="s1" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  <div class="px-5 pt-5 pb-2">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="text-lg">🤔</span>
+      <span class="text-[10px] font-black text-green-600 tracking-wider uppercase">AI 유형 진단</span>
+    </div>
+    <h2 class="text-base font-black text-gray-900">나는 AI를 어떻게 쓰고 있을까?</h2>
+    <p class="text-[11px] text-gray-400 mt-0.5">부담 없이 클릭해보세요 · 정답이 없어요 😊</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="px-5 pt-4 pb-3 border-t border-gray-50" id="q1">
+    <p class="text-xs font-black text-gray-800 mb-3">Q1. AI 도구를 쓸 때 나는?</p>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,1)">
+        <div class="text-xl mb-1">🚀</div><div class="text-[11px] font-bold">일단 써보고<br>뭔지 나중에 파악</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,1)">
+        <div class="text-xl mb-1">📖</div><div class="text-[11px] font-bold">원리 먼저 이해하고<br>신중하게 사용</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,1)">
+        <div class="text-xl mb-1">🤝</div><div class="text-[11px] font-bold">동료 추천 따라<br>검증된 것만</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,1)">
+        <div class="text-xl mb-1">😅</div><div class="text-[11px] font-bold">아직 AI 쓰는 게<br>어색하고 부담돼</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 (처음엔 숨김) -->
+  <div class="px-5 pt-4 pb-3 border-t border-gray-50 hidden" id="q2">
+    <p class="text-xs font-black text-gray-800 mb-3">Q2. AI가 내 판단 없이 결정을 내린다면?</p>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,2)">
+        <div class="text-xl mb-1">✋</div><div class="text-[11px] font-bold">무조건 반대<br>인간이 결정해야</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,2)">
+        <div class="text-xl mb-1">⚖️</div><div class="text-[11px] font-bold">경우에 따라<br>AI도 OK</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,2)">
+        <div class="text-xl mb-1">🤖</div><div class="text-[11px] font-bold">AI가 더 정확하면<br>맡겨도 돼</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="pickQ(this,2)">
+        <div class="text-xl mb-1">🙄</div><div class="text-[11px] font-bold">아직 그런 상황<br>경험 못해봤어</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="px-5 pt-4 pb-3 border-t border-gray-50 hidden" id="q3">
+    <p class="text-xs font-black text-gray-800 mb-3">Q3. "AI 윤리"라고 하면 먼저 떠오르는 건?</p>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="showResult()">
+        <div class="text-xl mb-1">🔒</div><div class="text-[11px] font-bold">개인정보·보안</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="showResult()">
+        <div class="text-xl mb-1">⚖️</div><div class="text-[11px] font-bold">편향·차별 문제</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="showResult()">
+        <div class="text-xl mb-1">📜</div><div class="text-[11px] font-bold">법·규제·책임</div>
+      </div>
+      <div class="quiz-card rounded-xl p-3 cursor-pointer text-center" onclick="showResult()">
+        <div class="text-xl mb-1">🤷</div><div class="text-[11px] font-bold">솔직히 잘 모름</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 결과 카드 (처음엔 숨김) ── -->
+<div id="result-card" class="hidden bg-white rounded-2xl border-2 border-green-200 shadow-sm overflow-hidden">
+  <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-4">
+    <div class="text-xs font-bold opacity-80 mb-1">나의 AI 유형</div>
+    <div class="text-lg font-black" id="result-type">🌱 AI 윤리 탐색자</div>
+    <p class="text-[11px] text-green-100 mt-1" id="result-desc">AI를 활용하고 싶지만 윤리적 판단 기준이 아직 불명확한 단계예요. 기초 개념부터 체계적으로 쌓아가면 좋아요!</p>
+  </div>
+  <div class="px-5 py-4">
+    <div class="text-[11px] text-gray-500 mb-3">📊 이 유형의 <strong class="text-gray-800">78%</strong>가 <strong class="text-green-600">기초 등급</strong>으로 시작해 합격했어요</div>
+    <div class="flex gap-2">
+      <button onclick="goStep(2)" class="flex-1 bg-green-600 text-white font-black py-2.5 rounded-xl text-xs hover:bg-green-700">
+        시험 접수하기 →
+      </button>
+      <button onclick="goPractice()" class="flex-1 border border-green-300 text-green-700 font-bold py-2.5 rounded-xl text-xs hover:bg-green-50">
+        연습문제로 준비하기 📚
+      </button>
+    </div>
+    <p class="text-[9px] text-gray-400 text-center mt-2">연습문제 패키지로 먼저 실력을 쌓고 접수해도 돼요</p>
+  </div>
+</div>
+
+<!-- ── 연습문제 연결 배너 (showPractice 시 표시) ── -->
+<div id="practice-banner" class="hidden bg-white rounded-2xl border border-blue-100 shadow-sm p-5">
+  <div class="flex items-center gap-3 mb-3">
+    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-lg">📚</div>
+    <div>
+      <div class="text-sm font-black text-gray-900">연습문제 패키지</div>
+      <div class="text-[10px] text-gray-400">실제 시험 유형 · AI 즉시 채점 · 오답 분석</div>
+    </div>
+  </div>
+  <div class="grid grid-cols-3 gap-2 mb-3">
+    <div class="bg-gray-50 rounded-lg p-2 text-center">
+      <div class="text-sm font-black text-green-600">3회</div>
+      <div class="text-[9px] text-gray-500">기본 팩<br>₩9,900</div>
+    </div>
+    <div class="bg-green-50 rounded-lg p-2 text-center border border-green-200">
+      <div class="text-sm font-black text-green-600">10회</div>
+      <div class="text-[9px] text-gray-500">합격 팩<br>₩24,900</div>
+    </div>
+    <div class="bg-gray-50 rounded-lg p-2 text-center">
+      <div class="text-sm font-black text-blue-600">무제한</div>
+      <div class="text-[9px] text-gray-500">프리미엄<br>₩39,900</div>
+    </div>
+  </div>
+  <button class="w-full bg-blue-600 text-white font-black py-2.5 rounded-xl text-xs hover:bg-blue-700">
+    연습문제 패키지 구매하기 →
+  </button>
+  <button onclick="goStep(2)" class="w-full mt-2 text-[10px] text-gray-400 hover:text-green-600">
+    바로 시험 접수하기 →
+  </button>
+</div>
+
+<!-- ══════════════════════════════
+     STEP 2 · 시험 선택
+══════════════════════════════ -->
+<div id="s2" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-[10px] font-black text-green-600 tracking-wider">STEP 2</span>
+    <span class="text-sm font-black text-gray-900">어떤 시험을 볼까요?</span>
+  </div>
+  <div class="space-y-2 mb-4">
+    <div class="choice-card flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300 hover:bg-green-50" onclick="pickExam(this,'ethics')">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">⚖️</span>
+        <div>
+          <div class="text-xs font-black text-gray-900">AI 윤리 시험</div>
+          <div class="text-[10px] text-gray-400">법적책임·편향·투명성·거버넌스</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs font-black text-green-600">₩35,000~</div>
+        <div class="tag-badge">접수 중</div>
+      </div>
+    </div>
+    <div class="choice-card flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50" onclick="pickExam(this,'translate')">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">🌐</span>
+        <div>
+          <div class="text-xs font-black text-gray-900">AI 번역 시험</div>
+          <div class="text-[10px] text-gray-400">번역품질·후편집·AI도구활용</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs font-black text-blue-600">₩40,000~</div>
+        <div class="tag-badge">접수 중</div>
+      </div>
+    </div>
+    <div class="choice-card flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 opacity-60">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">💬</span>
+        <div>
+          <div class="text-xs font-black text-gray-900">AI 프롬프트 시험</div>
+          <div class="text-[10px] text-gray-400">9월 오픈 예정</div>
+        </div>
+      </div>
+      <div class="text-[9px] text-gray-400 border border-gray-200 px-2 py-0.5 rounded-full">준비 중</div>
+    </div>
+  </div>
+
+  <!-- 등급 선택 -->
+  <div class="border-t border-gray-100 pt-4">
+    <p class="text-[10px] font-black text-gray-700 mb-2">등급 선택</p>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="choice-card p-3 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300" onclick="pickGrade(this,'basic')">
+        <div class="text-xs font-black text-gray-900">기초 Basic</div>
+        <div class="text-[10px] text-gray-400 mt-0.5">객관식 20문항 · 60분 · ₩35,000</div>
+        <div class="text-[9px] text-green-600 mt-1">👥 이 유형 78% 선택</div>
+      </div>
+      <div class="choice-card p-3 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300" onclick="pickGrade(this,'pro')">
+        <div class="text-xs font-black text-gray-900">전문 Professional</div>
+        <div class="text-[10px] text-gray-400 mt-0.5">객관식+단답형 · 90분 · ₩60,000</div>
+        <div class="text-[9px] text-gray-400 mt-1">기업·기관 담당자 추천</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 일정 선택 -->
+  <div class="border-t border-gray-100 pt-4 mt-2">
+    <p class="text-[10px] font-black text-gray-700 mb-2">시험 일정</p>
+    <div class="space-y-1.5">
+      <div class="choice-card flex justify-between items-center p-3 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300" onclick="pickDate(this)">
+        <div>
+          <span class="text-xs font-black">2026.07.12 (토) 10:00</span>
+          <span class="text-[10px] text-gray-400 ml-2">온라인</span>
+        </div>
+        <span class="text-[9px] text-orange-500 font-bold">잔여 128석</span>
+      </div>
+      <div class="choice-card flex justify-between items-center p-3 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300" onclick="pickDate(this)">
+        <div>
+          <span class="text-xs font-black">2026.07.19 (토) 14:00</span>
+          <span class="text-[10px] text-gray-400 ml-2">온라인</span>
+        </div>
+        <span class="text-[9px] text-green-600 font-bold">잔여 243석</span>
+      </div>
+      <div class="choice-card flex justify-between items-center p-3 rounded-xl border-2 border-gray-100 cursor-pointer hover:border-green-300" onclick="pickDate(this)">
+        <div>
+          <span class="text-xs font-black">2026.08.02 (토) 10:00</span>
+          <span class="text-[10px] text-gray-400 ml-2">온라인</span>
+        </div>
+        <span class="text-[9px] text-green-600 font-bold">잔여 300석</span>
+      </div>
+    </div>
+  </div>
+  <button onclick="goStep(3)" class="w-full mt-4 bg-green-600 text-white font-black py-3 rounded-xl text-sm hover:bg-green-700">다음 →</button>
+</div>
+
+<!-- ══════════════════════════════
+     STEP 3 · 신청자 정보
+══════════════════════════════ -->
+<div id="s3" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-[10px] font-black text-green-600 tracking-wider">STEP 3</span>
+    <span class="text-sm font-black text-gray-900">신청자 정보</span>
+  </div>
+  <div class="space-y-3 field-group">
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="text-[10px] font-black text-gray-600 block mb-1">이름 <span class="text-red-400">*</span></label>
+        <input type="text" value="박지은" placeholder="이름"></div>
+      <div><label class="text-[10px] font-black text-gray-600 block mb-1">생년월일 <span class="text-red-400">*</span></label>
+        <input type="date" value="1995-03-15"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="text-[10px] font-black text-gray-600 block mb-1">성별</label>
+        <div class="flex gap-2 mt-1"><span class="choice-chip on" onclick="toggleChip(this)">♂ 남</span><span class="choice-chip" onclick="toggleChip(this)">♀ 여</span></div>
+      </div>
+      <div><label class="text-[10px] font-black text-gray-600 block mb-1">국적</label>
+        <input type="text" value="대한민국"></div>
+    </div>
+    <div><label class="text-[10px] font-black text-gray-600 block mb-1">이메일 <span class="text-red-400">*</span></label>
+      <input type="email" value="jieun@email.com"></div>
+    <div><label class="text-[10px] font-black text-gray-600 block mb-1">휴대폰 <span class="text-red-400">*</span></label>
+      <input type="tel" value="010-1234-5678"></div>
+    <div><label class="text-[10px] font-black text-gray-600 block mb-1">직업/직종 <span class="text-[9px] text-gray-400">(선택 · 맞춤 정보 제공용)</span></label>
+      <select><option>선택해주세요</option><option>직장인</option><option>공무원</option><option>학생</option><option>프리랜서</option><option>기타</option></select>
+    </div>
+
+    <!-- 마케팅 자연스럽게 -->
+    <div class="bg-gray-50 rounded-xl p-3">
+      <label class="text-[10px] font-black text-gray-600 block mb-2">응시 경험</label>
+      <div class="flex gap-2">
+        <span class="choice-chip on" onclick="toggleChip(this)">첫 응시</span>
+        <span class="choice-chip" onclick="toggleChip(this)">재응시</span>
+      </div>
+    </div>
+    <div class="bg-gray-50 rounded-xl p-3">
+      <label class="text-[10px] font-black text-gray-600 block mb-2">시험을 알게 된 경로 <span class="text-[9px] text-gray-400">(선택 · 더 좋은 혜택 제공에 활용해요)</span></label>
+      <div class="flex flex-wrap gap-2">
+        <span class="choice-chip" onclick="toggleChip(this)">카카오톡</span>
+        <span class="choice-chip" onclick="toggleChip(this)">네이버</span>
+        <span class="choice-chip" onclick="toggleChip(this)">인스타그램</span>
+        <span class="choice-chip" onclick="toggleChip(this)">지인 추천</span>
+        <span class="choice-chip" onclick="toggleChip(this)">회사/학교</span>
+        <span class="choice-chip" onclick="toggleChip(this)">기타</span>
+      </div>
+    </div>
+
+    <!-- 증명사진 -->
+    <div><label class="text-[10px] font-black text-gray-600 block mb-1">증명사진 <span class="text-red-400">*</span> <span class="text-[9px] text-gray-400">자격증 발급에 사용</span></label>
+      <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-green-300 cursor-pointer">
+        <div class="text-2xl mb-1">📷</div>
+        <div class="text-[10px] text-gray-500">클릭하거나 파일을 끌어다 놓으세요</div>
+        <div class="text-[9px] text-gray-400 mt-1">JPG · PNG · 최대 5MB · 3.5×4.5cm</div>
+      </div>
+    </div>
+  </div>
+  <button onclick="goStep(4)" class="w-full mt-4 bg-green-600 text-white font-black py-3 rounded-xl text-sm hover:bg-green-700">다음 →</button>
+</div>
+
+<!-- ══════════════════════════════
+     STEP 4 · 결제 & 동의
+══════════════════════════════ -->
+<div id="s4" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-[10px] font-black text-green-600 tracking-wider">STEP 4</span>
+    <span class="text-sm font-black text-gray-900">결제 & 최종 확인</span>
+  </div>
+
+  <!-- 접수 요약 -->
+  <div class="bg-green-50 rounded-xl p-3 mb-4 space-y-1 text-[11px]">
+    <div class="flex justify-between"><span class="text-gray-500">시험</span><span class="font-black">AI 윤리 시험 · 기초</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">일정</span><span class="font-black">2026.07.12 10:00</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">응시료</span><span class="font-black">₩35,000</span></div>
+  </div>
+
+  <!-- 쿠폰/포인트 -->
+  <div class="field-group space-y-2 mb-4">
+    <div class="flex gap-2"><input placeholder="쿠폰 코드 입력" class="flex-1"><button class="bg-gray-100 text-gray-700 font-bold px-3 rounded-xl text-[11px] border border-gray-200">적용</button></div>
+    <div class="flex items-center justify-between text-[10px]">
+      <span class="text-gray-500">포인트 <span class="text-green-600 font-bold">12,500P 보유</span></span>
+      <div class="flex gap-1 items-center"><input type="number" placeholder="0" class="w-20 text-right"><span class="text-gray-400">P</span></div>
+    </div>
+  </div>
+
+  <!-- 결제수단 -->
+  <div class="mb-4">
+    <p class="text-[10px] font-black text-gray-700 mb-2">결제 수단</p>
+    <div class="grid grid-cols-2 gap-2">
+      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-green-300 bg-green-50 cursor-pointer"><input type="radio" name="pay" checked class="accent-green-600"><span class="text-[11px] font-bold">💳 카드</span></label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-gray-100 cursor-pointer"><input type="radio" name="pay" class="accent-green-600"><span class="text-[11px] font-bold">🟡 카카오페이</span></label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-gray-100 cursor-pointer"><input type="radio" name="pay" class="accent-green-600"><span class="text-[11px] font-bold">🟢 네이버페이</span></label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-gray-100 cursor-pointer"><input type="radio" name="pay" class="accent-green-600"><span class="text-[11px] font-bold">⭐ 포인트 전액</span></label>
+    </div>
+  </div>
+
+  <!-- 자격증 옵션 -->
+  <div class="bg-gray-50 rounded-xl p-3 mb-4">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input type="checkbox" class="accent-green-600">
+      <div>
+        <span class="text-[11px] font-black">자격증 + 카드 자격증 발급 신청</span>
+        <span class="text-[10px] text-green-600 ml-1">+₩3,000</span>
+        <div class="text-[9px] text-gray-400">합격 시 실물 자격증 배송 · 디지털 자격증 즉시 발급</div>
+      </div>
+    </label>
+  </div>
+
+  <!-- 약관 -->
+  <div class="space-y-1.5 mb-4 text-[10px]">
+    <label class="flex items-center gap-2 bg-green-50 p-2.5 rounded-lg"><input type="checkbox" checked class="accent-green-600"><span class="font-black">전체 동의</span></label>
+    <label class="flex items-center justify-between px-3"><div class="flex items-center gap-2"><input type="checkbox" checked class="accent-green-600"><span>[필수] 서비스 이용약관</span></div><button class="text-gray-400 underline">보기</button></label>
+    <label class="flex items-center justify-between px-3"><div class="flex items-center gap-2"><input type="checkbox" checked class="accent-green-600"><span>[필수] 개인정보 수집·이용</span></div><button class="text-gray-400 underline">보기</button></label>
+    <label class="flex items-center justify-between px-3"><div class="flex items-center gap-2"><input type="checkbox" checked class="accent-green-600"><span>[필수] 시험 응시 규정</span></div><button class="text-gray-400 underline">보기</button></label>
+    <label class="flex items-center justify-between px-3"><div class="flex items-center gap-2"><input type="checkbox" class="accent-green-600"><span>[선택] 마케팅 정보 수신 <span class="text-green-600">→ 쿠폰 먼저 받아요</span></span></div><button class="text-gray-400 underline">보기</button></label>
+  </div>
+
+  <div class="flex justify-between items-center mb-3">
+    <span class="text-sm font-black text-gray-900">최종 결제</span>
+    <span class="text-xl font-black text-green-600">₩35,000</span>
+  </div>
+  <button class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3.5 rounded-xl text-sm shadow-lg shadow-green-200">결제하고 접수 완료 →</button>
+  <p class="text-center text-[9px] text-gray-400 mt-2">접수 확인서가 카카오톡·이메일로 즉시 발송됩니다</p>
+</div>
+
+</div><!-- /all-steps -->
+
+<script>
+let qStep = 1;
+function pickQ(el, q) {
+  el.closest('#q'+q).querySelectorAll('.quiz-card').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  setTimeout(()=>{
+    if(q < 3){
+      document.getElementById('q'+(q+1)).classList.remove('hidden');
+      qStep = q+1;
+    }
+  }, 400);
+}
+function showResult(){
+  document.querySelectorAll('#q1,#q2,#q3').forEach(el=>{
+    el.querySelectorAll('.quiz-card').forEach(c=>{
+      c.style.pointerEvents='none';
+      c.style.opacity='.6';
+    });
+    el.querySelectorAll('.quiz-card.picked').forEach(c=>{
+      c.style.opacity='1';
+    });
+  });
+  document.getElementById('result-card').classList.remove('hidden');
+  updateProgress(2,'STEP 2 · 시험 선택','50%');
+}
+function goPractice(){
+  document.getElementById('result-card').classList.add('hidden');
+  document.getElementById('practice-banner').classList.remove('hidden');
+}
+function goStep(n){
+  ['s2','s3','s4'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  if(n===2){document.getElementById('s2').classList.remove('hidden');updateProgress(3,'STEP 2 · 시험 선택','50%');}
+  if(n===3){document.getElementById('s2').classList.add('hidden');document.getElementById('s3').classList.remove('hidden');updateProgress(4,'STEP 3 · 신청자 정보','75%');}
+  if(n===4){document.getElementById('s3').classList.add('hidden');document.getElementById('s4').classList.remove('hidden');updateProgress(5,'STEP 4 · 결제','100%');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProgress(step, label, pct){
+  document.getElementById('step-label').textContent = label;
+  document.getElementById('step-pct').textContent = pct;
+  document.getElementById('prog-bar').style.setProperty('--prog', pct);
+}
+function pickExam(el, type){ document.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('border-green-300','bg-green-50')); el.classList.add('border-green-300','bg-green-50'); }
+function pickGrade(el,g){ el.parentElement.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('border-green-300','bg-green-50')); el.classList.add('border-green-300','bg-green-50'); }
+function pickDate(el){ el.parentElement.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('border-green-300','bg-green-50')); el.classList.add('border-green-300','bg-green-50'); }
+function toggleChip(el){ el.classList.toggle('on'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휴텍씨 — 시험 접수 (가독성형)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+:root{
+  --green:#16a34a; --green-d:#15803d; --green-bg:#f0fdf4; --green-bd:#bbf7d0;
+  --blue:#0369a1;  --gray:#6b7280; --line:#e5e7eb; --text:#111827; --sub:#374151;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f9fafb;color:var(--text);line-height:1.6;}
+.container{max-width:720px;margin:0 auto;padding:40px 20px 80px;}
+/* 로고 헤더 */
+.header{text-align:center;margin-bottom:40px;}
+.logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:12px;}
+.logo-mark{width:40px;height:40px;background:linear-gradient(135deg,#16a34a,#0369a1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;}
+.logo-text{font-size:20px;font-weight:900;}
+.header-title{font-size:26px;font-weight:900;margin-bottom:8px;}
+.header-sub{font-size:15px;color:var(--gray);}
+/* 진행 표시 */
+.progress{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:40px;}
+.prog-step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;}
+.prog-num{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gray);background:#fff;}
+.prog-step.active .prog-num{background:var(--green);border-color:var(--green);color:#fff;}
+.prog-step.done .prog-num{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.prog-label{font-size:12px;font-weight:700;color:var(--gray);white-space:nowrap;}
+.prog-step.active .prog-label{color:var(--green);font-weight:900;}
+.prog-line{width:80px;height:2px;background:var(--line);margin-bottom:22px;}
+/* 섹션 */
+.section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.section-title{font-size:18px;font-weight:900;margin-bottom:6px;}
+.section-sub{font-size:14px;color:var(--gray);margin-bottom:20px;}
+.section-divider{width:100%;height:1px;background:var(--line);margin:20px 0;}
+/* AI 진단 */
+.quiz-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid var(--green-bd);border-radius:12px;padding:20px;margin-bottom:28px;}
+.quiz-tag{display:inline-block;background:var(--green-bg);color:var(--green-d);border:1px solid var(--green-bd);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;margin-bottom:10px;}
+.quiz-q{font-size:16px;font-weight:900;margin-bottom:12px;color:var(--text);}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.quiz-opt{border:2px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;font-size:14px;font-weight:500;background:#fff;transition:.2s;display:flex;align-items:flex-start;gap:8px;}
+.quiz-opt:hover,.quiz-opt.on{border-color:var(--green);background:var(--green-bg);color:var(--green-d);}
+.quiz-opt .q-icon{font-size:18px;flex-shrink:0;}
+.quiz-opt .q-text{display:flex;flex-direction:column;gap:2px;}
+.quiz-opt .q-main{font-size:14px;font-weight:700;}
+.quiz-opt .q-hint{font-size:12px;color:var(--gray);}
+.quiz-result{background:#fff;border:1px solid var(--green-bd);border-radius:12px;padding:18px;margin-top:16px;display:none;}
+.quiz-result.show{display:block;}
+.res-type{font-size:22px;font-weight:900;margin-bottom:6px;}
+.res-desc{font-size:14px;color:var(--gray);margin-bottom:14px;line-height:1.7;}
+/* 시험 카드 */
+.exam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.exam-card{border:2px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:.2s;text-align:center;}
+.exam-card:hover,.exam-card.on{border-color:var(--green);background:var(--green-bg);}
+.exam-card.disabled{opacity:.4;pointer-events:none;}
+.ec-icon{font-size:28px;margin-bottom:8px;}
+.ec-name{font-size:15px;font-weight:900;margin-bottom:4px;}
+.ec-sub{font-size:12px;color:var(--gray);margin-bottom:8px;line-height:1.5;}
+.ec-price{font-size:14px;font-weight:900;color:var(--green);}
+.tag{display:inline-block;background:#f0fdf4;color:#166534;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;margin-top:6px;}
+/* 등급 */
+.grade-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grade-card{border:2px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:.2s;}
+.grade-card:hover,.grade-card.on{border-color:var(--green);background:var(--green-bg);}
+.grade-name{font-size:16px;font-weight:900;margin-bottom:4px;}
+.grade-price{font-size:18px;font-weight:900;color:var(--green);margin-bottom:8px;}
+.grade-info{font-size:13px;color:var(--gray);line-height:1.7;}
+/* 일정 */
+.date-list{display:grid;gap:10px;}
+.date-card{border:2px solid var(--line);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:.2s;}
+.date-card:hover,.date-card.on{border-color:var(--green);background:var(--green-bg);}
+.date-info{display:flex;flex-direction:column;gap:3px;}
+.date-main{font-size:16px;font-weight:900;}
+.date-sub{font-size:13px;color:var(--gray);}
+.seat-badge{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;}
+.seat-low{background:#fff7ed;color:#9a3412;}
+.seat-ok{background:#f0fdf4;color:#166534;}
+/* 폼 필드 */
+.field-group{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.field label .req{color:#ef4444;font-size:12px;}
+.field label .opt{color:var(--gray);font-size:11px;font-weight:400;}
+.field input,.field select,.field textarea{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;transition:.2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #dcfce7;}
+.field .hint{font-size:12px;color:var(--gray);}
+/* 칩 선택 */
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{border:1.5px solid var(--line);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;transition:.15s;}
+.chip:hover,.chip.on{border-color:var(--green);background:var(--green-bg);color:var(--green-d);font-weight:700;}
+/* 추가 옵션 */
+.option-list{display:grid;gap:10px;}
+.option-item{border:1.5px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:.2s;}
+.option-item:hover{border-color:var(--green-bd);}
+.option-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--green);}
+.option-name{font-size:15px;font-weight:900;margin-bottom:4px;}
+.option-desc{font-size:13px;color:var(--gray);line-height:1.6;}
+.option-price{font-size:14px;font-weight:900;margin-top:4px;}
+/* 약관 */
+.agree-all{background:var(--green-bg);border:1.5px solid var(--green-bd);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px;}
+.agree-row{display:flex;align-items:center;justify-content:space-between;padding:10px 4px;}
+.agree-row label{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;}
+.agree-view{font-size:12px;color:var(--gray);text-decoration:underline;cursor:pointer;white-space:nowrap;}
+/* 결제 요약 */
+.pay-summary{background:var(--green-bg);border:1.5px solid var(--green-bd);border-radius:12px;padding:18px;margin-bottom:20px;}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--green-bd);font-size:14px;}
+.pay-row:last-child{border:none;}
+.pay-label{color:var(--gray);}
+.pay-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:2px solid var(--green-bd);margin-top:4px;}
+.pay-total-label{font-size:16px;font-weight:900;}
+.pay-total-val{font-size:24px;font-weight:900;color:var(--green);}
+/* 결제 수단 */
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.pay-method{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:500;}
+.pay-method input[type=radio]{accent-color:var(--green);}
+.pay-method.on{border-color:var(--green);background:var(--green-bg);}
+/* CTA */
+.cta-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:18px;font-size:18px;font-weight:900;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.cta-btn:hover{background:var(--green-d);}
+.cta-note{text-align:center;font-size:13px;color:var(--gray);margin-top:12px;}
+/* 연습문제 배너 */
+.practice-banner{background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1.5px solid #c7d2fe;border-radius:14px;padding:20px;margin-top:16px;display:none;}
+.practice-banner.show{display:block;}
+.prac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
+.prac-card{border:1.5px solid var(--line);border-radius:10px;padding:14px;text-align:center;background:#fff;}
+.prac-card.best{border-color:var(--green);background:var(--green-bg);}
+.prac-name{font-size:15px;font-weight:900;margin-bottom:4px;}
+.prac-price{font-size:14px;color:var(--green);font-weight:700;}
+/* 환불 박스 */
+.refund-box{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:14px;font-size:13px;color:#9a3412;line-height:1.8;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="logo"><div class="logo-mark">AI</div><div class="logo-text">휴텍씨</div></div>
+    <div class="header-title">AI 자격시험 접수</div>
+    <div class="header-sub">AI 윤리 · AI 번역 · AI 프롬프트 자격증</div>
+  </div>
+
+  <!-- 진행 표시 -->
+  <div class="progress">
+    <div class="prog-step done">
+      <div class="prog-num">✓</div>
+      <div class="prog-label">AI 유형 확인</div>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step active">
+      <div class="prog-num">2</div>
+      <div class="prog-label">시험 선택</div>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-num">3</div>
+      <div class="prog-label">신청자 정보</div>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-num">4</div>
+      <div class="prog-label">결제</div>
+    </div>
+  </div>
+
+  <!-- AI 유형 진단 퀴즈 -->
+  <div class="section">
+    <div class="section-title">🧠 AI 유형 미리보기</div>
+    <div class="section-sub">3가지 질문으로 내 유형을 확인하고, 알맞은 시험 등급을 추천받아요.</div>
+
+    <div class="quiz-box">
+      <!-- Q1 -->
+      <div id="rq1">
+        <div class="quiz-tag">Q1 of 3</div>
+        <div class="quiz-q">회사에서 AI가 채용 결정을 내린다면, 나는?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="rPick(this,1)"><div class="q-icon">🛑</div><div class="q-text"><div class="q-main">무조건 반대</div><div class="q-hint">인간 판단이 먼저</div></div></div>
+          <div class="quiz-opt" onclick="rPick(this,1)"><div class="q-icon">⚖️</div><div class="q-text"><div class="q-main">상황에 따라 다르다</div><div class="q-hint">근거 있으면 괜찮아</div></div></div>
+          <div class="quiz-opt" onclick="rPick(this,1)"><div class="q-icon">🤖</div><div class="q-text"><div class="q-main">AI가 더 공정하다</div><div class="q-hint">편견 없는 판단</div></div></div>
+          <div class="quiz-opt" onclick="rPick(this,1)"><div class="q-icon">🤷</div><div class="q-text"><div class="q-main">생각해본 적 없다</div><div class="q-hint">복잡한 문제야</div></div></div>
+        </div>
+      </div>
+      <!-- Q2 (숨김) -->
+      <div id="rq2" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+        <div class="quiz-tag">Q2 of 3</div>
+        <div class="quiz-q">"AI 편향"이라는 말을 들으면 어떤 느낌인가요?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="rPick(this,2)"><div class="q-icon">📰</div><div class="q-text"><div class="q-main">뉴스에서 봤다</div><div class="q-hint">개념 정도는 알아</div></div></div>
+          <div class="quiz-opt" onclick="rPick(this,2)"><div class="q-icon">🔬</div><div class="q-text"><div class="q-main">구체적 사례를 안다</div><div class="q-hint">GPT 성별 편향 등</div></div></div>
+          <div class="quiz-opt" onclick="rPick(this,2)"><div class="q-icon">😐</div><div class="q-text"><div class="q-main">들어봤지만 어렵다</div><div class="q-hint">와닿지 않아</div></div></div>
+          <div class="quiz-opt" onclick="rShowResult()"><div class="q-icon">🙅</div><div class="q-text"><div class="q-main">처음 듣는 말이다</div><div class="q-hint">생소한 개념</div></div></div>
+        </div>
+      </div>
+      <!-- 결과 -->
+      <div class="quiz-result" id="rq-result">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-size:13px;color:var(--gray);margin-bottom:4px;">나의 AI 윤리 유형</div>
+            <div class="res-type" id="r-type">🌱 AI 윤리 탐색자</div>
+            <div class="res-desc" id="r-desc">AI 윤리에 관심이 생기기 시작한 단계예요.<br>기초 개념부터 차근차근 시작하면 딱 맞아요.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button onclick="scrollDown('exam-section')" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">시험 접수하기 →</button>
+              <button onclick="showPrac()" style="background:#fff;color:#1d4ed8;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">📚 연습문제로 먼저 준비</button>
+            </div>
+          </div>
+          <div style="text-align:center;background:#f0fdf4;border-radius:10px;padding:12px 16px;white-space:nowrap;">
+            <div style="font-size:24px;font-weight:900;color:var(--green);">78%</div>
+            <div style="font-size:12px;color:var(--gray);">이 유형 기초 합격</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 연습문제 패키지 (숨김) -->
+    <div class="practice-banner" id="prac-banner">
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px;">📚 실제 시험 유형으로 준비하기</div>
+      <div style="font-size:14px;color:var(--gray);margin-bottom:12px;">지금 연습문제로 미리 감을 잡아보세요. 합격률이 2.3배 높아집니다.</div>
+      <div class="prac-grid">
+        <div class="prac-card">
+          <div class="prac-name">3회 팩</div>
+          <div class="prac-price">₩9,900</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:4px;">체험용</div>
+        </div>
+        <div class="prac-card best">
+          <div class="tag" style="margin-bottom:6px;">추천</div>
+          <div class="prac-name">10회 팩</div>
+          <div class="prac-price">₩24,900</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:4px;">충분한 연습</div>
+        </div>
+        <div class="prac-card">
+          <div class="prac-name">무제한</div>
+          <div class="prac-price" style="color:#7c3aed">₩39,900</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:4px;">완벽 준비</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button style="flex:1;background:#1d4ed8;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">연습문제 구매하기 →</button>
+        <button onclick="scrollDown('exam-section')" style="background:#fff;color:var(--gray);border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;font-size:14px;cursor:pointer;font-family:inherit;">바로 접수하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 시험 종목 -->
+  <div class="section" id="exam-section">
+    <div class="section-title">① 시험 종목 선택</div>
+    <div class="section-sub">응시할 시험을 선택해 주세요.</div>
+    <div class="exam-grid">
+      <div class="exam-card on" onclick="selCard('.exam-card',this)">
+        <div class="ec-icon">⚖️</div>
+        <div class="ec-name">AI 윤리 시험</div>
+        <div class="ec-sub">법적 책임, 편향, 투명성, AI 거버넌스</div>
+        <div class="ec-price">₩35,000 ~</div>
+        <div class="tag">접수 중</div>
+      </div>
+      <div class="exam-card" onclick="selCard('.exam-card',this)">
+        <div class="ec-icon">🌐</div>
+        <div class="ec-name">AI 번역 시험</div>
+        <div class="ec-sub">번역 품질, 후편집(MTPE), AI 도구 활용</div>
+        <div class="ec-price">₩40,000 ~</div>
+        <div class="tag">접수 중</div>
+      </div>
+      <div class="exam-card disabled">
+        <div class="ec-icon">💬</div>
+        <div class="ec-name">AI 프롬프트</div>
+        <div class="ec-sub">2026년 9월 오픈 예정</div>
+        <div class="ec-price" style="color:var(--gray)">미정</div>
+        <div class="tag" style="background:#f3f4f6;color:var(--gray)">준비 중</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 등급 선택 -->
+  <div class="section">
+    <div class="section-title">② 등급 선택</div>
+    <div class="section-sub">현재 수준과 목표에 맞는 등급을 선택하세요.</div>
+    <div class="grade-grid">
+      <div class="grade-card on" onclick="selCard('.grade-card',this)">
+        <div class="grade-name">기초 Basic</div>
+        <div class="grade-price">₩35,000</div>
+        <div class="grade-info">
+          객관식 20문항 · 60분<br>
+          70점 이상 합격<br>
+          <span style="color:var(--green);font-weight:700;">👥 탐색자 유형 78% 선택</span>
+        </div>
+      </div>
+      <div class="grade-card" onclick="selCard('.grade-card',this)">
+        <div class="grade-name">전문 Professional</div>
+        <div class="grade-price">₩60,000</div>
+        <div class="grade-info">
+          객관식+단답형 · 90분<br>
+          75점 이상 합격<br>
+          기업·기관 담당자 권장
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 일정 선택 -->
+  <div class="section">
+    <div class="section-title">③ 시험 일정 선택</div>
+    <div class="section-sub">편한 날짜를 선택하세요. 온라인 시험은 PC에서 응시합니다.</div>
+    <div class="date-list">
+      <div class="date-card on" onclick="selCard('.date-card',this)">
+        <div class="date-info">
+          <div class="date-main">2026년 07월 12일 (토) 오전 10:00</div>
+          <div class="date-sub">온라인 (PC) · 60분 · 성적 즉시 발표</div>
+        </div>
+        <div class="seat-badge seat-low">잔여 128석 ⚡</div>
+      </div>
+      <div class="date-card" onclick="selCard('.date-card',this)">
+        <div class="date-info">
+          <div class="date-main">2026년 07월 19일 (토) 오후 02:00</div>
+          <div class="date-sub">온라인 (PC) · 60분 · 성적 즉시 발표</div>
+        </div>
+        <div class="seat-badge seat-ok">잔여 243석</div>
+      </div>
+      <div class="date-card" onclick="selCard('.date-card',this)">
+        <div class="date-info">
+          <div class="date-main">2026년 08월 02일 (토) 오전 10:00</div>
+          <div class="date-sub">온라인 (PC) · 60분 · 성적 즉시 발표</div>
+        </div>
+        <div class="seat-badge seat-ok">잔여 300석</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 신청자 정보 -->
+  <div class="section">
+    <div class="section-title">④ 신청자 정보</div>
+    <div class="section-sub">자격증 발급에 사용되는 정보입니다. 정확히 입력해 주세요.</div>
+    <div class="field-group">
+      <div class="field"><label>이름 <span class="req">*</span></label><input value="박지은" placeholder="실명 입력"></div>
+      <div class="field"><label>생년월일 <span class="req">*</span></label><input type="date" value="1995-03-15"></div>
+      <div class="field">
+        <label>성별</label>
+        <div class="chip-group"><span class="chip on" onclick="toggleChip(this)">남성</span><span class="chip" onclick="toggleChip(this)">여성</span><span class="chip" onclick="toggleChip(this)">미기재</span></div>
+      </div>
+      <div class="field"><label>국적 <span class="req">*</span></label><input value="대한민국"></div>
+      <div class="field"><label>이메일 <span class="req">*</span></label><input type="email" value="jieun@email.com"><div class="hint">결과 및 자격증 발송에 사용됩니다</div></div>
+      <div class="field"><label>휴대폰 <span class="req">*</span></label><input type="tel" value="010-1234-5678"><div class="hint">카카오톡 알림 발송</div></div>
+      <div class="field"><label>직업/직종 <span class="opt">(선택)</span></label><select><option value="">선택해주세요</option><option>직장인</option><option>공무원/공공기관</option><option>학생</option><option>프리랜서</option><option>사업자</option><option>기타</option></select><div class="hint">더 알맞은 학습 자료 제공에 활용됩니다</div></div>
+      <div class="field"><label>긴급 연락처 <span class="opt">(선택)</span></label><input placeholder="010-0000-0000"><div class="hint">시험 중 비상 연락 용도</div></div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="field-group">
+      <div class="field">
+        <label>응시 경험</label>
+        <div class="chip-group"><span class="chip on" onclick="toggleChip(this)">첫 응시</span><span class="chip" onclick="toggleChip(this)">재응시 (이전에 응시함)</span></div>
+      </div>
+      <div class="field">
+        <label>알림 수신 방법 <span class="opt">(중복 선택 가능)</span></label>
+        <div class="chip-group"><span class="chip on" onclick="toggleChip(this)">카카오톡</span><span class="chip on" onclick="toggleChip(this)">이메일</span><span class="chip" onclick="toggleChip(this)">문자 SMS</span></div>
+      </div>
+      <div class="field full">
+        <label>시험을 어떻게 알게 되셨나요? <span class="opt">(선택 · 더 좋은 혜택 제공에 활용)</span></label>
+        <div class="chip-group">
+          <span class="chip" onclick="toggleChip(this)">카카오톡/카카오채널</span>
+          <span class="chip" onclick="toggleChip(this)">네이버/구글 검색</span>
+          <span class="chip" onclick="toggleChip(this)">인스타그램/유튜브</span>
+          <span class="chip" onclick="toggleChip(this)">지인 추천</span>
+          <span class="chip" onclick="toggleChip(this)">회사/학교 공지</span>
+          <span class="chip" onclick="toggleChip(this)">기타</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+    <!-- 증명사진 -->
+    <div>
+      <div style="font-size:15px;font-weight:900;margin-bottom:6px;">증명사진 업로드 <span style="font-size:13px;color:#ef4444;font-weight:700;">* 필수</span></div>
+      <div style="font-size:14px;color:var(--gray);margin-bottom:14px;">자격증 발급에 사용됩니다. 최근 6개월 이내 촬영, 3.5×4.5cm 규격.</div>
+      <div style="display:flex;align-items:center;gap:16px;background:#f9fafb;border:1.5px dashed var(--line);border-radius:12px;padding:20px;cursor:pointer;">
+        <div style="width:60px;height:80px;background:var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--gray);">👤</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">파일 선택 또는 드래그</div>
+          <div style="font-size:13px;color:var(--gray);">JPG, PNG 파일 · 최대 5MB</div>
+          <div style="margin-top:8px;"><button style="background:var(--green-bg);color:var(--green-d);border:1.5px solid var(--green-bd);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">파일 선택하기</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가 옵션 -->
+  <div class="section">
+    <div class="section-title">⑤ 추가 신청 <span style="font-size:15px;font-weight:400;color:var(--gray);">(선택)</span></div>
+    <div class="section-sub">합격 후 더 많은 것을 얻고 싶다면 함께 신청하세요.</div>
+    <div class="option-list">
+      <label class="option-item">
+        <input type="checkbox">
+        <div>
+          <div class="option-name">자격증 발급 신청</div>
+          <div class="option-desc">합격 시 실물 자격증 + 카드 자격증 배송. 디지털 자격증은 즉시 발급됩니다.</div>
+          <div class="option-price" style="color:var(--green);">+₩3,000</div>
+        </div>
+      </label>
+      <label class="option-item">
+        <input type="checkbox">
+        <div>
+          <div class="option-name">AI 분석 리포트</div>
+          <div class="option-desc">영역별 강점·약점 분석, 맞춤 학습 경로 제공. 시험 후 PDF로 발급됩니다.</div>
+          <div class="option-price" style="color:var(--blue);">+₩15,000~</div>
+        </div>
+      </label>
+      <label class="option-item">
+        <input type="checkbox">
+        <div>
+          <div class="option-name">전문가 개별 피드백</div>
+          <div class="option-desc">담당 전문가가 직접 답안을 검토하고 1:1 피드백을 드립니다.</div>
+          <div class="option-price" style="color:#7c3aed;">+₩20,000</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <!-- 결제 -->
+  <div class="section">
+    <div class="section-title">⑥ 결제</div>
+    <div class="section-sub">쿠폰 또는 포인트를 적용하고 결제 방법을 선택하세요.</div>
+    <!-- 쿠폰 -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">쿠폰 코드</div>
+      <div style="display:flex;gap:8px;">
+        <input placeholder="쿠폰 코드 입력" style="flex:1;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;">
+        <button style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">적용</button>
+      </div>
+    </div>
+    <!-- 포인트 -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">포인트 사용 <span style="font-size:13px;color:var(--gray);font-weight:400;">보유 12,500P</span></div>
+      <input type="number" placeholder="사용할 포인트를 입력하세요" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;">
+    </div>
+    <!-- 금액 요약 -->
+    <div class="pay-summary">
+      <div class="pay-row"><span class="pay-label">응시료</span><span style="font-weight:700;">₩35,000</span></div>
+      <div class="pay-row"><span class="pay-label">할인</span><span style="color:#ef4444;font-weight:700;">-₩0</span></div>
+      <div class="pay-total"><span class="pay-total-label">최종 결제 금액</span><span class="pay-total-val">₩35,000</span></div>
+    </div>
+    <!-- 결제 수단 -->
+    <div style="font-size:15px;font-weight:900;margin-bottom:12px;">결제 수단</div>
+    <div class="pay-methods">
+      <label class="pay-method on" onclick="selPay(this)"><input type="radio" name="pay" checked> 💳 신용/체크카드</label>
+      <label class="pay-method" onclick="selPay(this)"><input type="radio" name="pay"> 🟡 카카오페이</label>
+      <label class="pay-method" onclick="selPay(this)"><input type="radio" name="pay"> 🟢 네이버페이</label>
+      <label class="pay-method" onclick="selPay(this)"><input type="radio" name="pay"> ⭐ 포인트 전액</label>
+    </div>
+    <!-- 약관 -->
+    <div class="section-divider"></div>
+    <div style="font-size:15px;font-weight:900;margin-bottom:12px;">약관 동의</div>
+    <label class="agree-all" onclick="this.querySelector('input').checked = !this.querySelector('input').checked">
+      <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--green);">
+      <span style="font-size:15px;font-weight:900;">전체 동의 (필수 + 선택 포함)</span>
+    </label>
+    <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden;">
+      <div class="agree-row" style="border-bottom:1px solid var(--line);">
+        <label><input type="checkbox" checked style="accent-color:var(--green);width:16px;height:16px;"> [필수] 서비스 이용약관</label>
+        <span class="agree-view">보기</span>
+      </div>
+      <div class="agree-row" style="border-bottom:1px solid var(--line);">
+        <label><input type="checkbox" checked style="accent-color:var(--green);width:16px;height:16px;"> [필수] 개인정보 수집 및 이용 동의</label>
+        <span class="agree-view">보기</span>
+      </div>
+      <div class="agree-row" style="border-bottom:1px solid var(--line);">
+        <label><input type="checkbox" checked style="accent-color:var(--green);width:16px;height:16px;"> [필수] 시험 응시 규정 동의</label>
+        <span class="agree-view">보기</span>
+      </div>
+      <div class="agree-row">
+        <label><input type="checkbox" style="accent-color:var(--green);width:16px;height:16px;"> [선택] 마케팅 정보 수신 동의 <span style="color:var(--green);font-size:12px;font-weight:700;">→ 쿠폰 먼저 드려요</span></label>
+        <span class="agree-view">보기</span>
+      </div>
+    </div>
+    <!-- CTA -->
+    <div style="margin-top:24px;">
+      <button class="cta-btn">결제하고 접수 완료하기 →</button>
+      <div class="cta-note">접수 확인서가 카카오톡과 이메일로 즉시 발송됩니다</div>
+    </div>
+    <div class="refund-box">
+      <strong>⚠ 환불 및 연기 안내</strong><br>
+      시험일 7일 전: 전액 환불 · 시험일 3~6일 전: 50% 환불<br>
+      시험일 2일 전 ~ 당일: 환불 불가 · 연기 신청은 1:1 상담으로 접수
+    </div>
+  </div>
+
+</div><!-- /container -->
+<script>
+function rPick(el,q){
+  el.closest('#rq'+q).querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+  setTimeout(()=>{
+    if(q===1){document.getElementById('rq2').style.display='block';}
+    else{rShowResult();}
+  },400);
+}
+function rShowResult(){document.getElementById('rq-result').classList.add('show');}
+function showPrac(){document.getElementById('prac-banner').classList.add('show'); document.getElementById('prac-banner').scrollIntoView({behavior:'smooth',block:'center'});}
+function scrollDown(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+function selCard(selector, el){document.querySelectorAll(selector).forEach(c=>c.classList.remove('on')); el.classList.add('on');}
+function selPay(el){document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('on')); el.classList.add('on');}
+function toggleChip(el){el.classList.toggle('on');}
+</script>
+</body>
+</html>

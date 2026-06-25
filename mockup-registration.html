@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휴텍씨 — 시험 접수 신청서</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  * { font-family: 'Noto Sans KR', sans-serif; }
+  .step-active { background: #16a34a; color: white; border-color: #16a34a; }
+  .step-done { background: #dcfce7; color: #15803d; border-color: #86efac; }
+  .step-inactive { background: white; color: #9ca3af; border-color: #e5e7eb; }
+  .exam-card.selected { border-color: #16a34a; background: #f0fdf4; }
+  .grade-card.selected { border-color: #16a34a; background: #f0fdf4; }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- 헤더 -->
+<header class="bg-white border-b border-gray-200">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center text-white font-black text-sm">AI</div>
+      <div>
+        <span class="font-black text-gray-900 text-sm">휴텍씨</span>
+        <span class="text-gray-400 text-xs ml-1">AI 시험 플랫폼</span>
+      </div>
+    </div>
+    <div class="text-xs text-gray-500">로그인: 박지은님 | <a href="#" class="text-green-600">마이페이지</a></div>
+  </div>
+</header>
+
+<div class="max-w-5xl mx-auto px-6 py-8">
+
+  <!-- 페이지 제목 -->
+  <div class="mb-6">
+    <h1 class="text-lg font-black text-gray-900">시험 접수 신청</h1>
+    <p class="text-xs text-gray-500 mt-1">AI 자격 시험 접수 — 모든 항목을 정확하게 입력해 주세요</p>
+  </div>
+
+  <!-- 단계 표시 -->
+  <div class="flex items-center gap-0 mb-8">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-black step-done" id="step1-circle">✓</div>
+      <span class="text-xs font-bold text-green-700">시험 선택</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-green-200 mx-2"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-black step-active" id="step2-circle">2</div>
+      <span class="text-xs font-bold text-green-700">신청 정보 입력</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-black step-inactive">3</div>
+      <span class="text-xs text-gray-400">결제</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-black step-inactive">4</div>
+      <span class="text-xs text-gray-400">접수 완료</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-6">
+
+    <!-- ── 좌측: 신청서 폼 ── -->
+    <div class="col-span-2 space-y-4">
+
+      <!-- ① 시험 종목 선택 -->
+      <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 class="text-sm font-black text-gray-900 mb-1 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center font-black">1</span>
+          시험 종목 선택
+        </h2>
+        <p class="text-[10px] text-gray-400 mb-3 ml-7">응시할 AI 자격 시험을 선택하세요</p>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="exam-card selected border-2 rounded-xl p-3 cursor-pointer" onclick="selectExam(this, 'ethics')">
+            <div class="text-lg mb-1">⚖️</div>
+            <div class="text-xs font-black text-gray-900">AI 윤리 시험</div>
+            <div class="text-[9px] text-gray-400 mt-0.5">AI Ethics Certification</div>
+            <div class="text-[9px] text-green-600 font-bold mt-1.5">● 접수 중</div>
+          </div>
+          <div class="exam-card border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-gray-300" onclick="selectExam(this, 'translate')">
+            <div class="text-lg mb-1">🌐</div>
+            <div class="text-xs font-black text-gray-900">AI 번역 시험</div>
+            <div class="text-[9px] text-gray-400 mt-0.5">AI Translation Certification</div>
+            <div class="text-[9px] text-green-600 font-bold mt-1.5">● 접수 중</div>
+          </div>
+          <div class="exam-card border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-gray-300 opacity-50" onclick="">
+            <div class="text-lg mb-1">💬</div>
+            <div class="text-xs font-black text-gray-900">AI 프롬프트 시험</div>
+            <div class="text-[9px] text-gray-400 mt-0.5">AI Prompt Certification</div>
+            <div class="text-[9px] text-gray-400 font-bold mt-1.5">○ 준비 중</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② 등급 선택 -->
+      <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 class="text-sm font-black text-gray-900 mb-1 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center font-black">2</span>
+          등급 선택
+        </h2>
+        <p class="text-[10px] text-gray-400 mb-3 ml-7">응시 등급을 선택하세요 (AI 윤리 시험 기준)</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="grade-card selected border-2 rounded-xl p-3 cursor-pointer" onclick="selectGrade(this)">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-black text-gray-900">기초 (Basic)</span>
+              <span class="text-xs font-black text-green-600">₩35,000</span>
+            </div>
+            <div class="text-[10px] text-gray-500">일반인·학생 대상 / 객관식 20문항 / 60분</div>
+            <div class="text-[10px] text-gray-400 mt-1">합격 기준: 70% 이상 (14문항)</div>
+          </div>
+          <div class="grade-card border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-gray-300" onclick="selectGrade(this)">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-black text-gray-900">전문 (Professional)</span>
+              <span class="text-xs font-black text-green-600">₩60,000</span>
+            </div>
+            <div class="text-[10px] text-gray-500">기업·기관 담당자 / 객관식+단답형 / 90분</div>
+            <div class="text-[10px] text-gray-400 mt-1">합격 기준: 70% 이상 (심화)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ 시험 일정 선택 -->
+      <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 class="text-sm font-black text-gray-900 mb-1 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center font-black">3</span>
+          시험 일정 선택
+        </h2>
+        <p class="text-[10px] text-gray-400 mb-3 ml-7">exam_date · start_time · region (DB 저장)</p>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="border-2 border-green-300 bg-green-50 rounded-xl p-3 cursor-pointer">
+            <div class="text-[10px] text-green-600 font-bold mb-0.5">2026.07.12 (토)</div>
+            <div class="text-xs font-black text-gray-900">10:00 ~ 11:00</div>
+            <div class="text-[10px] text-gray-500 mt-1">온라인 (PC)</div>
+            <div class="text-[9px] text-green-600 mt-1">잔여 128석</div>
+          </div>
+          <div class="border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-gray-300">
+            <div class="text-[10px] text-gray-500 font-bold mb-0.5">2026.07.19 (토)</div>
+            <div class="text-xs font-black text-gray-900">14:00 ~ 15:00</div>
+            <div class="text-[10px] text-gray-500 mt-1">온라인 (PC)</div>
+            <div class="text-[9px] text-green-600 mt-1">잔여 243석</div>
+          </div>
+          <div class="border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-gray-300">
+            <div class="text-[10px] text-gray-500 font-bold mb-0.5">2026.08.02 (토)</div>
+            <div class="text-xs font-black text-gray-900">10:00 ~ 11:00</div>
+            <div class="text-[10px] text-gray-500 mt-1">온라인 (PC)</div>
+            <div class="text-[9px] text-green-600 mt-1">잔여 300석</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ④ 개인 정보 -->
+      <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 class="text-sm font-black text-gray-900 mb-1 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center font-black">4</span>
+          개인 정보 확인 (users 테이블 자동 불러오기)
+        </h2>
+        <p class="text-[10px] text-gray-400 mb-3 ml-7">가입 정보로 자동 입력됩니다. 변경이 필요하면 수정하세요.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">이름 <span class="text-red-400">*</span></label>
+            <input type="text" value="박지은" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-green-400 bg-gray-50">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">생년월일 <span class="text-red-400">*</span></label>
+            <input type="date" value="1995-03-15" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-green-400">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">이메일 <span class="text-red-400">*</span></label>
+            <input type="email" value="jieun@email.com" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-green-400 bg-gray-50">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">휴대폰 <span class="text-red-400">*</span></label>
+            <input type="tel" value="010-1234-5678" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-green-400">
+          </div>
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">증명사진 <span class="text-red-400">*</span> <span class="text-gray-400 font-normal">(자격증 발급에 사용됩니다)</span></label>
+            <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3 hover:border-green-300 cursor-pointer">
+              <div class="w-12 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400">사진</div>
+              <div>
+                <div class="text-xs font-bold text-gray-700">JPG, PNG / 최대 5MB</div>
+                <div class="text-[10px] text-gray-400 mt-0.5">3.5cm × 4.5cm 증명사진 형식 (최근 6개월 이내)</div>
+                <button class="mt-2 text-[10px] text-green-600 border border-green-300 px-2 py-0.5 rounded hover:bg-green-50">파일 선택</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">긴급 연락처 <span class="text-gray-400 font-normal">(선택)</span></label>
+            <input type="tel" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-green-400">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-700 mb-1">알림 수신 방법</label>
+            <div class="flex gap-3 mt-1.5">
+              <label class="flex items-center gap-1 text-[10px]"><input type="checkbox" checked class="accent-green-600"> 카카오톡</label>
+              <label class="flex items-center gap-1 text-[10px]"><input type="checkbox" checked class="accent-green-600"> 이메일</label>
+              <label class="flex items-center gap-1 text-[10px]"><input type="checkbox" class="accent-green-600"> 문자</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑤ 약관 동의 -->
+      <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 class="text-sm font-black text-gray-900 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center font-black">5</span>
+          약관 동의 (terms 테이블)
+        </h2>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 p-2.5 bg-green-50 rounded-lg border border-green-100 cursor-pointer">
+            <input type="checkbox" checked class="accent-green-600">
+            <span class="text-xs font-bold text-gray-700 flex-1">전체 동의</span>
+          </label>
+          <div class="pl-4 space-y-1.5">
+            <label class="flex items-center justify-between gap-2 cursor-pointer">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-green-600">
+                <span class="text-[10px] text-gray-700">[필수] 서비스 이용약관</span>
+              </div>
+              <button class="text-[10px] text-gray-400 underline">보기</button>
+            </label>
+            <label class="flex items-center justify-between gap-2 cursor-pointer">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-green-600">
+                <span class="text-[10px] text-gray-700">[필수] 개인정보 수집·이용 동의</span>
+              </div>
+              <button class="text-[10px] text-gray-400 underline">보기</button>
+            </label>
+            <label class="flex items-center justify-between gap-2 cursor-pointer">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-green-600">
+                <span class="text-[10px] text-gray-700">[필수] 시험 응시 규정 확인</span>
+              </div>
+              <button class="text-[10px] text-gray-400 underline">보기</button>
+            </label>
+            <label class="flex items-center justify-between gap-2 cursor-pointer">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" class="accent-green-600">
+                <span class="text-[10px] text-gray-700">[선택] 마케팅 정보 수신 동의 (marketing_agree)</span>
+              </div>
+              <button class="text-[10px] text-gray-400 underline">보기</button>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 우측: 접수 요약 ── -->
+    <div class="col-span-1">
+      <div class="sticky top-4 space-y-3">
+
+        <!-- 선택 요약 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <h3 class="text-xs font-black text-gray-900 mb-3 pb-2 border-b border-gray-100">접수 요약</h3>
+          <div class="space-y-2 text-[10px]">
+            <div class="flex justify-between">
+              <span class="text-gray-500">시험 종목</span>
+              <span class="font-bold text-gray-900">AI 윤리 시험</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">응시 등급</span>
+              <span class="font-bold text-gray-900">기초 (Basic)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">시험 일시</span>
+              <span class="font-bold text-gray-900">2026.07.12 10:00</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">시험 환경</span>
+              <span class="font-bold text-gray-900">온라인 (PC)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">성적 발표</span>
+              <span class="font-bold text-gray-900">접수 후 즉시</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결제 금액 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <h3 class="text-xs font-black text-gray-900 mb-3 pb-2 border-b border-gray-100">결제 금액</h3>
+          <div class="space-y-1.5 text-[10px]">
+            <div class="flex justify-between">
+              <span class="text-gray-500">응시료</span>
+              <span class="font-bold">₩35,000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">쿠폰 할인</span>
+              <div class="flex items-center gap-1">
+                <input type="text" placeholder="코드 입력" class="border border-gray-200 rounded px-1.5 py-0.5 text-[9px] w-20">
+                <button class="text-[9px] text-green-600 border border-green-200 px-1.5 py-0.5 rounded">적용</button>
+              </div>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">포인트 사용</span>
+              <div class="flex items-center gap-1">
+                <span class="text-gray-400">보유 12,500P</span>
+                <input type="text" placeholder="0" class="border border-gray-200 rounded px-1.5 py-0.5 text-[9px] w-12 text-right">
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between">
+            <span class="text-xs font-bold text-gray-900">최종 결제</span>
+            <span class="text-sm font-black text-green-600">₩35,000</span>
+          </div>
+
+          <div class="mt-3 space-y-1.5">
+            <div class="text-[10px] font-bold text-gray-700 mb-1">결제 수단</div>
+            <label class="flex items-center gap-2 text-[10px]"><input type="radio" name="pay" checked class="accent-green-600"> 카드 결제</label>
+            <label class="flex items-center gap-2 text-[10px]"><input type="radio" name="pay" class="accent-green-600"> 카카오페이</label>
+            <label class="flex items-center gap-2 text-[10px]"><input type="radio" name="pay" class="accent-green-600"> 네이버페이</label>
+            <label class="flex items-center gap-2 text-[10px]"><input type="radio" name="pay" class="accent-green-600"> 포인트 전액 결제</label>
+          </div>
+        </div>
+
+        <!-- 자격증 신청 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <h3 class="text-xs font-black text-gray-900 mb-2">자격증 발급 신청 (선택)</h3>
+          <p class="text-[10px] text-gray-400 mb-2">합격 시 자격증을 발급받을 수 있습니다</p>
+          <label class="flex items-center gap-2 text-[10px]">
+            <input type="checkbox" class="accent-green-600">
+            <span>자격증 + 카드 자격증 <span class="text-green-600 font-bold">+₩3,000</span></span>
+          </label>
+        </div>
+
+        <!-- 접수 버튼 -->
+        <button class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl text-sm transition-all shadow-lg shadow-green-100">
+          결제하고 접수 완료 →
+        </button>
+        <p class="text-center text-[9px] text-gray-400">접수 완료 후 카카오톡·이메일로 확인서가 발송됩니다</p>
+
+        <!-- 환불 정책 -->
+        <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
+          <div class="text-[10px] font-bold text-amber-700 mb-1">⚠ 환불 규정</div>
+          <div class="text-[9px] text-amber-600 space-y-0.5">
+            <div>· 시험 7일 전: 전액 환불</div>
+            <div>· 시험 3~6일 전: 50% 환불</div>
+            <div>· 시험 2일 전~당일: 환불 불가</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+    <button class="text-xs text-gray-500 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50">← 이전 단계</button>
+    <div class="text-[10px] text-gray-400">입력한 정보는 exam_registrations 테이블에 저장됩니다</div>
+    <button class="text-xs font-black bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 shadow">결제로 이동 →</button>
+  </div>
+</div>
+
+<script>
+function selectExam(el, type) {
+  document.querySelectorAll('.exam-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectGrade(el) {
+  document.querySelectorAll('.grade-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

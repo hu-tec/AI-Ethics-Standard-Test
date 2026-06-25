@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:4000/api'
+const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
 
 function getToken() {
   return localStorage.getItem('ai_ethics_token')
@@ -29,10 +29,19 @@ export const api = {
   saveDiagnosis: (body) => request('/diagnosis/save', { method: 'POST', body: JSON.stringify(body) }),
   getHistory: () => request('/diagnosis/history'),
 
+  // Exam applications
+  createExamApplication: (body) => request('/exams/applications', { method: 'POST', body: JSON.stringify(body) }),
+  myExamApplications: () => request('/exams/applications/me'),
+
   // Admin
   adminStats: () => request('/admin/stats'),
   adminUsers: () => request('/admin/users'),
   adminDeleteUser: (id) => request(`/admin/users/${id}`, { method: 'DELETE' }),
   adminChangeRole: (id, role) => request(`/admin/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) }),
   adminDiagnosis: () => request('/admin/diagnosis'),
+  adminApplications: (params = {}) => {
+    const search = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== '')).toString()
+    return request(`/admin/applications${search ? `?${search}` : ''}`)
+  },
+  adminUpdateApplication: (id, body) => request(`/admin/applications/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
 }
