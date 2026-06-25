@@ -170,7 +170,17 @@ export default function AdminDB() {
           <h1 className="text-lg font-black text-gray-900">DB 관리</h1>
           <p className="text-[11px] text-gray-500">엑셀 30개 테이블 · 실시간 DB 3개 + 설계 27개</p>
         </div>
-        <Link to="/admin" className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50">← 관리자 대시보드</Link>
+        <div className="flex items-center gap-2">
+          <a
+            href={`${import.meta.env.BASE_URL}mockup-admin-hd.html`}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-black"
+          >
+            🗄 목업 HTML 전체화면 ↗
+          </a>
+          <Link to="/admin" className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50">← 관리자 대시보드</Link>
+        </div>
       </div>
 
       <div className="adb">

@@ -202,7 +202,10 @@ export default function Admin() {
               </button>
             ))}
           </div>
-          <Link to="/admin/db" className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-bold text-white hover:bg-black">🗄 DB 관리 · 30개 테이블 →</Link>
+          <div className="flex items-center gap-2">
+            <a href={`${import.meta.env.BASE_URL}mockup-admin-hd.html`} target="_blank" rel="noreferrer" className="rounded-lg border border-gray-800 bg-white px-4 py-2 text-xs font-bold text-gray-800 hover:bg-gray-50">🗄 목업 HTML ↗</a>
+            <Link to="/admin/db" className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-bold text-white hover:bg-black">🗄 DB 관리 · 30개 테이블 →</Link>
+          </div>
         </div>
 
         {tab === 0 && (
