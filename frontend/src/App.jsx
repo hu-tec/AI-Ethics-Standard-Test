@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -25,7 +25,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
     <AuthProvider>
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -57,6 +57,6 @@ export default function App() {
         <Footer />
       </div>
     </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
