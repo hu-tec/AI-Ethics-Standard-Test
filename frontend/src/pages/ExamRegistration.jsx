@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Award, CalendarDays, CheckCircle2, ClipboardList, CreditCard, FileText, Search, Ticket } from 'lucide-react'
 import { api } from '../lib/api'
 
@@ -344,7 +345,9 @@ export default function ExamRegistration() {
                 <p className="text-[10px] font-medium text-slate-500">시험 일정 → 접수 → 결제 → 수험표 → 응시 → 결과/자격증</p>
               </div>
             </div>
-            <div className="hidden lg:block" />
+            <div className="flex items-center justify-end">
+              <Link to="/admin" className="rounded-md border border-gray-900 bg-gray-900 px-3 py-1.5 text-[11px] font-black text-white hover:bg-black">🔧 관리자 페이지 →</Link>
+            </div>
             <div className="grid grid-cols-3 gap-1.5 text-center text-[10px] font-black">
               <span className="rounded border border-primary-200 bg-primary-50 px-2 py-1 text-primary-700">번역시험 핵심 개발</span>
               <span className="rounded border border-accent-200 bg-accent-50 px-2 py-1 text-accent-700">접수·결제 모듈</span>
