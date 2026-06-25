@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -189,16 +190,19 @@ export default function Admin() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="mb-6 flex w-fit gap-1 rounded-lg border border-gray-200 bg-white p-1">
-          {TABS.map((t, i) => (
-            <button
-              key={t}
-              onClick={() => setTab(i)}
-              className={`rounded-md px-4 py-2 text-xs font-bold transition-all ${tab === i ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              {t}
-            </button>
-          ))}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex w-fit gap-1 rounded-lg border border-gray-200 bg-white p-1">
+            {TABS.map((t, i) => (
+              <button
+                key={t}
+                onClick={() => setTab(i)}
+                className={`rounded-md px-4 py-2 text-xs font-bold transition-all ${tab === i ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          <Link to="/admin/db" className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-bold text-white hover:bg-black">🗄 DB 관리 · 30개 테이블 →</Link>
         </div>
 
         {tab === 0 && (

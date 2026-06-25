@@ -21,6 +21,7 @@ import PaidDiagnosis3 from './pages/PaidDiagnosis3'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
+import AdminDB from './pages/AdminDB'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/paid-diagnosis/2" element={<ProtectedRoute><PaidDiagnosis2 /></ProtectedRoute>} />
             <Route path="/paid-diagnosis/3" element={<ProtectedRoute><PaidDiagnosis3 /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
+            <Route path="/admin/db" element={<ProtectedRoute adminOnly><AdminDB /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>
