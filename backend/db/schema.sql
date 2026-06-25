@@ -120,3 +120,21 @@ ALTER TABLE exam_applications
 -- 1단계에서는 접수/관리자 화면이 사용하는 exam_applications만 실제 운영합니다.
 -- 추후 단계에서 exams/payments/certificates 등을 점진적으로 추가합니다.
 -- ============================================================
+
+-- ============================================================
+-- 관리자 계정 시드
+--   이메일   : admin@naver.com
+--   비밀번호 : admin1234   (bcrypt 12라운드 해시 — 로그인 후 반드시 변경 권장)
+--   재실행해도 안전한 UPSERT. 이미 있으면 role=admin 으로 승격.
+-- ============================================================
+INSERT INTO users (email, password_hash, name, role)
+VALUES (
+  'admin@naver.com',
+  '$2a$12$xad7eCcR3MocknMSW5JJZe4UTY0x59x1zpIssymzCWyXa.WejSdMS',
+  '휴텍씨 관리자',
+  'admin'
+)
+ON CONFLICT (email) DO UPDATE
+  SET role = 'admin',
+      password_hash = EXCLUDED.password_hash,
+      name = EXCLUDED.name;
